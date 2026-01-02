@@ -127,19 +127,22 @@
                     <a-entity position="-0.7 0 0.5" id="flask-glucose">
                         <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5; opacity: 1; transparent: false"></a-cone>
                         <a-cylinder radius="0.06" height="0.1" position="0 0.35 0" material="shader: flat; color: #f5f5f5; opacity: 1; transparent: false"></a-cylinder>
-                        <a-text value="Glucose" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
+                        <!-- Màu chữ nổi bật (Xanh đậm) để nhìn rõ trên nền trắng -->
+                        <a-text value="Glucose" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#0055ff"></a-text>
                     </a-entity>
 
                     <a-entity position="0 0 0.5" id="flask-naoh">
                         <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" material="shader: flat; color: #f5f5f5; opacity: 1; transparent: false"></a-cylinder>
                         <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" material="shader: flat; color: #f5f5f5; opacity: 1; transparent: false"></a-cylinder>
-                        <a-text value="NaOH" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
+                        <!-- Màu chữ nổi bật -->
+                        <a-text value="NaOH" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#ff0000"></a-text>
                     </a-entity>
 
                     <a-entity position="0.7 0 0.5" id="flask-cuso4">
                         <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" material="shader: flat; color: #f5f5f5; opacity: 1; transparent: false"></a-cylinder>
                         <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" material="shader: flat; color: #f5f5f5; opacity: 1; transparent: false"></a-cylinder>
-                        <a-text value="CuSO4" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
+                        <!-- Màu chữ nổi bật -->
+                        <a-text value="CuSO4" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#0000bb"></a-text>
                     </a-entity>
 
                     <!-- Pipette -->
@@ -251,27 +254,27 @@
             liquid.setAttribute('material', { shader: 'flat', color: COLOR_LIQUID_WHITE, opacity: 0.6, transparent: true });
             liquidBottom.setAttribute('material', { shader: 'flat', color: COLOR_LIQUID_WHITE, opacity: 0.6, transparent: true });
             statusText.innerText = "Glucose là dung dịch trong suốt, không màu.";
-            instruction.innerText = "Bước 2: Thêm dung dịch NaOH";
+            instruction.innerText = "Bước 2: Thêm dung dịch Sodium Hydroxide (NaOH)";
             btnNa.disabled = false;
         });
 
         btnNa.addEventListener('click', async () => {
             btnNa.disabled = true;
-            instruction.innerText = "Đang hút NaOH...";
+            instruction.innerText = "Đang hút Sodium Hydroxide...";
             await runPipetteSequence({x: 0, y: 0.4, z: 0.5}, COLOR_LIQUID_WHITE, 0.5, "0 0.35 0", 0.7);
             liquid.setAttribute('material', { shader: 'flat', color: COLOR_LIQUID_WHITE, opacity: 0.6, transparent: true });
             liquidBottom.setAttribute('material', { shader: 'flat', color: COLOR_LIQUID_WHITE, opacity: 0.6, transparent: true });
-            statusText.innerText = "NaOH và Glucose trộn lẫn, chưa có phản ứng đổi màu.";
-            instruction.innerText = "Bước 3: Thêm dung dịch CuSO4";
+            statusText.innerText = "Sodium Hydroxide và Glucose trộn lẫn, chưa có phản ứng đổi màu.";
+            instruction.innerText = "Bước 3: Thêm dung dịch Copper(II) Sulfate (CuSO4)";
             btnCu.disabled = false;
         });
 
         btnCu.addEventListener('click', async () => {
             btnCu.disabled = true;
-            instruction.innerText = "Đang hút CuSO4...";
+            instruction.innerText = "Đang hút Copper(II) Sulfate...";
             await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, COLOR_CUSO4_BLUE, 0.7, "0 0.45 0", 0.8);
             
-            statusText.innerText = "CuSO4 phản ứng với NaOH tạo Cu(OH)2, sau đó Glucose hòa tan Cu(OH)2...";
+            statusText.innerText = "CuSO4 phản ứng với NaOH tạo Copper(II) Hydroxide, sau đó Glucose hòa tan phức chất...";
             
             liquid.setAttribute('material', { 
                 shader: 'flat', 
@@ -288,7 +291,7 @@
             
             await new Promise(r => setTimeout(r, 500));
             instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Kết quả: Xuất hiện dung dịch phức đồng-glucose màu xanh lam thẫm.<br>Giải thích: Các nhóm -OH kề nhau trong Glucose hòa tan Cu(OH)2 vừa tạo thành.";
+            statusText.innerHTML = "Kết quả: Xuất hiện dung dịch phức Copper-Glucose màu xanh lam thẫm.<br>Giải thích: Các nhóm -OH kề nhau trong Glucose hòa tan Copper(II) Hydroxide tạo thành phức tan.";
         });
     </script>
 </body>
