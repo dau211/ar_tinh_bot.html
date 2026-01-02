@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>AR Thí nghiệm tinh bột</title>
+
+  <!-- Thư viện -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    body { margin:0; overflow:hidden; font-family: Arial; }
+    #btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      padding: 12px 20px; font-size: 16px; border-radius:8px; border:none; background:#3f51b5; color:white; cursor:pointer; }
+  </style>
+</head>
+
+<body>
+<button id="btn">Nhỏ dung dịch Iot</button>
+
+<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+  <a-marker preset="hiro">
+    <!-- Cốc -->
+    <a-cylinder position="0 0.5 0" radius="0.25" height="1" color="#cccccc" opacity="0.25"></a-cylinder>
+    <!-- Dung dịch -->
+    <a-cylinder id="dd" position="0 0.25 0" radius="0.23" height="0.5" color="white" opacity="0.9"></a-cylinder>
+    <!-- Nhãn -->
+    <a-text id="label" value="Dung dịch tinh bột" position="-1 1.2 0" scale="0.6 0.6 0.6" color="black"></a-text>
+  </a-marker>
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+const dd = document.getElementById("dd");
+const label = document.getElementById("label");
+document.getElementById("btn").onclick = function() {
+  dd.setAttribute("color","#2e1a47"); // đổi màu xanh tím
+  label.setAttribute("value","Dung dịch đổi màu xanh tím");
+};
+</script>
+</body>
+</html>
