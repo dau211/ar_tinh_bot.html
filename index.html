@@ -110,7 +110,7 @@
                 gesture-handler="minScale: 0.5; maxScale: 3">
                 
                 <a-entity id="lab-equipment">
-                    <!-- Giá đỡ ống nghiệm: Đặt tại 0 0 0 -->
+                    <!-- Giá đỡ ống nghiệm -->
                     <a-box position="0 0.025 0" width="0.4" height="0.05" depth="0.4" color="#333"></a-box>
 
                     <!-- 1. Lọ đựng Starch -->
@@ -120,28 +120,36 @@
                         <a-text value="Starch" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 2. Cốc nước Lạnh -->
+                    <!-- 2. Cốc nước Lạnh (Thành dày) -->
                     <a-entity id="beaker-cold" position="-0.5 0 0">
+                        <!-- Thành ngoài -->
                         <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1" open-ended="true" position="0 0.25 0"></a-cylinder>
-                        <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.2; transparent: true; side: double"></a-circle>
-                        <a-cylinder radius="0.21" height="0.4" position="0 0.2 0" material="color: #00e5ff; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
+                        <!-- Thành trong tạo độ dày -->
+                        <a-cylinder radius="0.205" height="0.5" material="color: #ffffff; opacity: 0.15; transparent: true; side: double" open-ended="true" position="0 0.25 0"></a-cylinder>
+                        <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.3; transparent: true"></a-circle>
+                        <!-- Nước lạnh -->
+                        <a-cylinder radius="0.204" height="0.4" position="0 0.2 0" material="color: #00e5ff; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
                         <a-text value="Nuoc Lanh" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- Cụm Ống nghiệm và Vòng giữ: Đáy ống nghiệm sát đế (vị trí y thấp hơn) -->
+                    <!-- Cụm Ống nghiệm và Vòng giữ -->
                     <a-entity id="moving-tube-assembly" position="0 0.05 0">
-                        <a-torus position="0 1.2 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
+                        <a-torus position="0 1.4 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
                         <a-cylinder id="test-tube" position="0 0.7 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.15; transparent: true; side: double; metalness: 0.2; roughness: 0.1"></a-cylinder>
                         <a-sphere position="0 0.01 0" radius="0.12" material="color: #fff; opacity: 0.15; transparent: true"></a-sphere>
                         <a-cylinder id="liquid" position="0 0.1 0" radius="0.118" height="0.01" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-cylinder>
                         <a-sphere id="liquid-bottom" position="0 0.02 0" radius="0.118" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-sphere>
                     </a-entity>
 
-                    <!-- 3. Cốc nước Nóng -->
+                    <!-- 3. Cốc nước Nóng (Thành dày) -->
                     <a-entity id="beaker-hot" position="0.5 0 0">
+                        <!-- Thành ngoài -->
                         <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1" open-ended="true" position="0 0.25 0"></a-cylinder>
-                        <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.2; transparent: true; side: double"></a-circle>
-                        <a-cylinder radius="0.21" height="0.4" position="0 0.2 0" material="color: #ff4500; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
+                        <!-- Thành trong tạo độ dày -->
+                        <a-cylinder radius="0.205" height="0.5" material="color: #ffffff; opacity: 0.15; transparent: true; side: double" open-ended="true" position="0 0.25 0"></a-cylinder>
+                        <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.3; transparent: true"></a-circle>
+                        <!-- Nước nóng -->
+                        <a-cylinder radius="0.204" height="0.4" position="0 0.2 0" material="color: #ff4500; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
                         <a-text value="Nuoc Nong" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
@@ -215,34 +223,27 @@
         updateOrientation();
 
         async function runPipetteSequence(flaskPos, color, targetHeight, targetPos, liqOpacity = 0.4) {
-            // 1. Pipette xuất hiện phía trên lọ
             pipette.setAttribute('visible', 'true');
             pipette.setAttribute('position', {x: flaskPos.x, y: flaskPos.y + 1.2, z: flaskPos.z});
             pipetteLiqBody.setAttribute('visible', 'false');
             await new Promise(r => setTimeout(r, 400));
 
-            // 2. Nhúng pipette vào lọ theo chiều dọc
             pipette.setAttribute('animation', `property: position; to: ${flaskPos.x} ${flaskPos.y + 0.4} ${flaskPos.z}; dur: 700`);
             await new Promise(r => setTimeout(r, 800));
 
-            // 3. Hút hóa chất
             pipetteLiqBody.setAttribute('material', { color: color, opacity: 0.8, shader: 'flat', transparent: true });
             pipetteLiqBody.setAttribute('visible', 'true');
             await new Promise(r => setTimeout(r, 400));
 
-            // 4. Nhấc pipette lên cao
             pipette.setAttribute('animation', `property: position; to: ${flaskPos.x} 1.6 ${flaskPos.z}; dur: 700`);
             await new Promise(r => setTimeout(r, 800));
 
-            // 5. Di chuyển pipette đến phía trên ống nghiệm (giữ độ cao)
             pipette.setAttribute('animation', 'property: position; to: 0 1.6 0; dur: 800');
             await new Promise(r => setTimeout(r, 900));
 
-            // 6. Hạ thấp nhẹ pipette xuống miệng ống nghiệm để nhỏ giọt
             pipette.setAttribute('animation', 'property: position; to: 0 1.4 0; dur: 400');
             await new Promise(r => setTimeout(r, 500));
 
-            // 7. Nhỏ giọt
             drop.setAttribute('material', { color: color, opacity: 0.8, shader: 'flat', transparent: true });
             drop.setAttribute('visible', 'true');
             drop.setAttribute('position', '0 1.0 0');
@@ -252,11 +253,9 @@
             await new Promise(r => setTimeout(r, 700));
             drop.setAttribute('visible', 'false');
             
-            // 8. Nhấc pipette lên và biến mất
             pipette.setAttribute('animation', 'property: position; to: 0 2.2 0; dur: 600');
             setTimeout(() => pipette.setAttribute('visible', 'false'), 650);
 
-            // Cập nhật mức dịch trong ống nghiệm
             liquid.setAttribute('visible', 'true');
             liquidBottom.setAttribute('visible', 'true');
             liquid.setAttribute('material', { color: color, opacity: liqOpacity, transparent: true });
@@ -269,7 +268,6 @@
         btnStarch.addEventListener('click', async () => {
             btnStarch.disabled = true;
             instruction.innerText = "Đang thêm hồ tinh bột...";
-            // Điều chỉnh targetPos cho dịch lỏng do đáy ống nghiệm đã hạ thấp
             await runPipetteSequence({x: -1.0, y: 0, z: 0}, COLOR_STARCH, 0.4, "0 0.2 0", 0.4);
             statusText.innerText = "Đã thêm hồ tinh bột vào ống nghiệm.";
             instruction.innerText = "Bước 2: Thêm dung dịch Iodine (I2)";
