@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>AR Chemistry: Markerless Starch + Iodine</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <!-- Sử dụng phiên bản AR.js hỗ trợ nhận diện mặt phẳng hoặc định vị tĩnh -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
     <style>
@@ -36,7 +35,7 @@
             gap: 10px;
             z-index: 1000;
             justify-content: flex-start;
-            width: 90%;
+            width: 95%;
             overflow-x: auto;
             padding: 10px;
             background: rgba(0, 0, 0, 0.5);
@@ -72,8 +71,8 @@
 <body style="margin: 0; overflow: hidden;">
     <div class="ui-panel">
         <div id="step-title" style="font-size: 18px; color: #ffcc00;">PHẢN ỨNG HỒ TINH BỘT + IODINE</div>
-        <div id="instruction">Chạm vào màn hình để đặt dụng cụ vào không gian</div>
-        <div id="status-text">Đang khởi tạo AR không dấu (Markerless)...</div>
+        <div id="instruction">Đang khởi tạo thí nghiệm...</div>
+        <div id="status-text">Đang hiển thị trong không gian (Markerless)</div>
     </div>
 
     <div class="controls">
@@ -84,74 +83,71 @@
         <button id="btn-reset" onclick="location.reload()">Làm lại</button>
     </div>
 
-    <!-- Chế độ source: webcam và vr-mode-ui disabled -->
     <a-scene 
         embedded 
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;" 
+        arjs="sourceType: webcam; debugUIEnabled: false;" 
         vr-mode-ui="enabled: false"
         gesture-detector
         id="scene">
         
-        <!-- Thay vì a-marker, chúng ta dùng một entity rỗng cố định trước camera -->
-        <!-- Hoặc dùng 'anchor' nếu sử dụng Location-based, ở đây ta đặt cố định trong không gian camera -->
-        <a-entity id="anchor-point" position="0 0 -2">
+        <!-- Đặt vị trí anchor ở khoảng cách -1 đến -2 để người dùng nhìn thấy ngay mà không cần zoom -->
+        <a-entity id="anchor-point" position="0 -0.5 -1.5">
             
             <a-entity 
                 id="world-container" 
                 class="clickable"
                 gesture-handler="minScale: 0.1; maxScale: 5"
-                scale="0.5 0.5 0.5">
+                scale="0.6 0.6 0.6">
                 
                 <a-entity id="lab-equipment">
-                    <!-- Giá đỡ ống nghiệm -->
+                    <!-- Giá đỡ ống nghiệm trung tâm -->
                     <a-box position="0 0.025 0" width="0.4" height="0.05" depth="0.4" color="#333"></a-box>
 
-                    <!-- 1. Lọ đựng Starch -->
-                    <a-entity position="-1.0 0 0" id="flask-starch">
-                        <a-cone radius-bottom="0.15" radius-top="0.05" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5"></a-cone>
-                        <a-cylinder radius="0.05" height="0.1" position="0 0.35 0" material="shader: flat; color: #f5f5f5"></a-cylinder>
-                        <a-text value="Starch" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
+                    <!-- 1. Lọ đựng Starch (Trái) -->
+                    <a-entity position="-0.8 0 0" id="flask-starch">
+                        <a-cone radius-bottom="0.12" radius-top="0.04" height="0.25" position="0 0.125 0" material="shader: flat; color: #f5f5f5"></a-cone>
+                        <a-text value="Tinh bot" position="0 0.4 0" scale="0.2 0.2 0.2" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 2. Cốc nước Lạnh -->
-                    <a-entity id="beaker-cold" position="-0.5 0 0">
-                        <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double" open-ended="true" position="0 0.25 0"></a-cylinder>
-                        <a-cylinder radius="0.204" height="0.4" position="0 0.2 0" material="color: #00e5ff; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
-                        <a-text value="Nuoc Lanh" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
+                    <!-- 2. Cốc nước Lạnh (Giữa trái) -->
+                    <a-entity id="beaker-cold" position="-0.4 0 0.3">
+                        <a-cylinder radius="0.15" height="0.35" material="color: #ffffff; opacity: 0.2; transparent: true; side: double" open-ended="true" position="0 0.175 0"></a-cylinder>
+                        <a-cylinder radius="0.14" height="0.28" position="0 0.14 0" material="color: #00e5ff; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
+                        <a-text value="Lanh" position="0 0.45 0" scale="0.2 0.2 0.2" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- Cụm Ống nghiệm -->
+                    <!-- Cụm Ống nghiệm Chính (Trung tâm) -->
                     <a-entity id="moving-tube-assembly" position="0 0.05 0">
-                        <a-cylinder id="test-tube" position="0 0.7 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.15; transparent: true; side: double"></a-cylinder>
-                        <a-sphere position="0 0.01 0" radius="0.12" material="color: #fff; opacity: 0.15; transparent: true"></a-sphere>
-                        <a-cylinder id="liquid" position="0 0.1 0" radius="0.118" height="0.01" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-cylinder>
-                        <a-sphere id="liquid-bottom" position="0 0.02 0" radius="0.118" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-sphere>
+                        <a-cylinder id="test-tube" position="0 0.5 0" radius="0.08" height="1.0" material="color: #fff; opacity: 0.15; transparent: true; side: double"></a-cylinder>
+                        <a-sphere position="0 0.01 0" radius="0.08" material="color: #fff; opacity: 0.15; transparent: true"></a-sphere>
+                        <a-cylinder id="liquid" position="0 0.1 0" radius="0.078" height="0.01" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-cylinder>
+                        <a-sphere id="liquid-bottom" position="0 0.02 0" radius="0.078" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-sphere>
                     </a-entity>
 
-                    <!-- 3. Cốc nước Nóng -->
-                    <a-entity id="beaker-hot" position="0.5 0 0">
-                        <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double" open-ended="true" position="0 0.25 0"></a-cylinder>
-                        <a-cylinder radius="0.204" height="0.4" position="0 0.2 0" material="color: #ff4500; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
-                        <a-text value="Nuoc Nong" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
+                    <!-- 3. Cốc nước Nóng (Giữa phải) -->
+                    <a-entity id="beaker-hot" position="0.4 0 0.3">
+                        <a-cylinder radius="0.15" height="0.35" material="color: #ffffff; opacity: 0.2; transparent: true; side: double" open-ended="true" position="0 0.175 0"></a-cylinder>
+                        <a-cylinder radius="0.14" height="0.28" position="0 0.14 0" material="color: #ff4500; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
+                        <a-text value="Nong" position="0 0.45 0" scale="0.2 0.2 0.2" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 4. Lọ đựng Iodine -->
-                    <a-entity position="1.0 0 0" id="flask-iodine">
-                        <a-cone radius-bottom="0.15" radius-top="0.05" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5"></a-cone>
-                        <a-plane width="0.15" height="0.1" position="0 0.15 0.151" color="#8b4513"></a-plane>
-                        <a-text value="Iodine" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
+                    <!-- 4. Lọ đựng Iodine (Phải) -->
+                    <a-entity position="0.8 0 0" id="flask-iodine">
+                        <a-cone radius-bottom="0.12" radius-top="0.04" height="0.25" position="0 0.125 0" material="shader: flat; color: #f5f5f5"></a-cone>
+                        <a-plane width="0.12" height="0.08" position="0 0.125 0.121" color="#8b4513"></a-plane>
+                        <a-text value="Iodine" position="0 0.4 0" scale="0.2 0.2 0.2" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
                     <!-- Pipette -->
-                    <a-entity id="pipette-container" position="0 2 0" visible="false">
-                        <a-cylinder radius="0.007" height="0.4" color="#fff" opacity="0.6"></a-cylinder>
-                        <a-cone radius-bottom="0.007" radius-top="0.002" height="0.15" position="0 -0.275 0" color="#fff" opacity="0.6"></a-cone>
-                        <a-sphere radius="0.035" position="0 0.22" color="#8b0000" scale="1 1.5 1"></a-sphere>
-                        <a-cylinder id="pipette-liquid" radius="0.006" height="0.15" position="0 -0.1 0" material="shader: flat; opacity: 0.8"></a-cylinder>
+                    <a-entity id="pipette-container" position="0 1.5 0" visible="false">
+                        <a-cylinder radius="0.005" height="0.3" color="#fff" opacity="0.6"></a-cylinder>
+                        <a-cone radius-bottom="0.005" radius-top="0.001" height="0.1" position="0 -0.2 0" color="#fff" opacity="0.6"></a-cone>
+                        <a-sphere radius="0.025" position="0 0.16" color="#8b0000" scale="1 1.5 1"></a-sphere>
+                        <a-cylinder id="pipette-liquid" radius="0.004" height="0.1" position="0 -0.05 0" material="shader: flat; opacity: 0.8"></a-cylinder>
                     </a-entity>
 
-                    <!-- Giọt bầu dục -->
-                    <a-sphere id="drop" radius="0.03" scale="0.5 1.2 0.5" color="#fff" position="0 1.5 0" visible="false"></a-sphere>
+                    <!-- Giọt -->
+                    <a-sphere id="drop" radius="0.02" scale="0.5 1.2 0.5" color="#fff" position="0 1 0" visible="false"></a-sphere>
                 </a-entity>
             </a-entity>
         </a-entity>
@@ -160,7 +156,6 @@
     </a-scene>
 
     <script>
-        // Các biến điều khiển logic giữ nguyên từ bản trước
         const liquid = document.querySelector('#liquid');
         const liquidBottom = document.querySelector('#liquid-bottom');
         const drop = document.querySelector('#drop');
@@ -180,44 +175,40 @@
         const COLOR_IODINE = "#8b4513"; 
         const COLOR_STARCH_IODINE = "#000080"; 
 
-        // Khởi tạo ngay lập tức vì không cần Marker
         window.onload = () => {
-            statusText.innerText = "Chế độ AR tự do đã sẵn sàng!";
-            instruction.innerText = "Sử dụng 2 ngón tay để thu phóng hoặc xoay dụng cụ.";
+            statusText.innerText = "Sẵn sàng!";
+            instruction.innerText = "Các dụng cụ đã được đặt trước camera.";
         };
 
         async function runPipetteSequence(flaskPos, color, targetHeight, targetPos) {
             pipette.setAttribute('visible', 'true');
-            pipette.setAttribute('position', {x: flaskPos.x, y: flaskPos.y + 1.2, z: flaskPos.z});
+            pipette.setAttribute('position', {x: flaskPos.x, y: flaskPos.y + 0.8, z: flaskPos.z});
             pipetteLiqBody.setAttribute('visible', 'false');
             await new Promise(r => setTimeout(r, 400));
 
-            pipette.setAttribute('animation', `property: position; to: ${flaskPos.x} ${flaskPos.y + 0.4} ${flaskPos.z}; dur: 700`);
+            pipette.setAttribute('animation', `property: position; to: ${flaskPos.x} ${flaskPos.y + 0.3} ${flaskPos.z}; dur: 700`);
             await new Promise(r => setTimeout(r, 800));
 
             pipetteLiqBody.setAttribute('material', { color: color, opacity: 0.8, shader: 'flat', transparent: true });
             pipetteLiqBody.setAttribute('visible', 'true');
             await new Promise(r => setTimeout(r, 400));
 
-            pipette.setAttribute('animation', `property: position; to: ${flaskPos.x} 1.6 ${flaskPos.z}; dur: 700`);
+            pipette.setAttribute('animation', `property: position; to: ${flaskPos.x} 1.0 ${flaskPos.z}; dur: 700`);
             await new Promise(r => setTimeout(r, 800));
 
-            pipette.setAttribute('animation', 'property: position; to: 0 1.8 0; dur: 800');
+            pipette.setAttribute('animation', 'property: position; to: 0 1.2 0; dur: 800');
             await new Promise(r => setTimeout(r, 900));
-
-            pipette.setAttribute('animation', 'property: position; to: 0 1.7 0; dur: 400');
-            await new Promise(r => setTimeout(r, 500));
 
             drop.setAttribute('material', { color: color, opacity: 0.8, shader: 'flat', transparent: true });
             drop.setAttribute('visible', 'true');
-            drop.setAttribute('position', '0 1.3 0');
+            drop.setAttribute('position', '0 0.8 0');
             drop.setAttribute('animation', 'property: position; to: 0 0.2 0; dur: 650; easing: easeInQuad');
             
             pipetteLiqBody.setAttribute('visible', 'false');
             await new Promise(r => setTimeout(r, 700));
             drop.setAttribute('visible', 'false');
             
-            pipette.setAttribute('animation', 'property: position; to: 0 2.5 0; dur: 600');
+            pipette.setAttribute('animation', 'property: position; to: 0 1.8 0; dur: 600');
             setTimeout(() => pipette.setAttribute('visible', 'false'), 650);
 
             liquid.setAttribute('visible', 'true');
@@ -232,37 +223,37 @@
         btnStarch.addEventListener('click', async () => {
             btnStarch.disabled = true;
             statusText.innerText = "Đang thêm hồ tinh bột...";
-            await runPipetteSequence({x: -1.0, y: 0, z: 0}, COLOR_STARCH, 0.4, "0 0.2 0");
+            await runPipetteSequence({x: -0.8, y: 0, z: 0}, COLOR_STARCH, 0.3, "0 0.15 0");
             btnIodine.disabled = false;
-            statusText.innerText = "Đã có hồ tinh bột. Hãy thêm Iodine.";
+            statusText.innerText = "Tiếp theo: Thêm Iodine.";
         });
 
         btnIodine.addEventListener('click', async () => {
             btnIodine.disabled = true;
             statusText.innerText = "Đang thêm Iodine...";
-            await runPipetteSequence({x: 1.0, y: 0, z: 0}, COLOR_IODINE, 0.5, "0 0.25 0");
+            await runPipetteSequence({x: 0.8, y: 0, z: 0}, COLOR_IODINE, 0.4, "0 0.2 0");
             
             liquid.setAttribute('animation__color', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 1000 });
             liquidBottom.setAttribute('animation__color', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 1000 });
             
             btnHot.disabled = false;
-            statusText.innerText = "Dung dịch chuyển màu xanh tím. Hãy thử đun nóng.";
+            statusText.innerText = "Đã đổi màu. Hãy thử đun nóng.";
         });
 
-        async function dipTubeIntoBeaker(targetX, targetY) {
-            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 1.0 0; dur: 800; easing: easeInOutQuad`);
+        async function dipTubeIntoBeaker(targetX, targetY, targetZ) {
+            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 0.8 0; dur: 800; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 900));
-            movingTubeAssembly.setAttribute('animation', `property: position; to: ${targetX} 1.0 0; dur: 1000; easing: easeInOutQuad`);
+            movingTubeAssembly.setAttribute('animation', `property: position; to: ${targetX} 0.8 ${targetZ}; dur: 1000; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 1100));
-            movingTubeAssembly.setAttribute('animation', `property: position; to: ${targetX} ${targetY} 0; dur: 1200; easing: easeInOutQuad`);
+            movingTubeAssembly.setAttribute('animation', `property: position; to: ${targetX} ${targetY} ${targetZ}; dur: 1200; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 1300));
         }
 
         async function liftAndReturnTube() {
             const currentPos = movingTubeAssembly.getAttribute('position');
-            movingTubeAssembly.setAttribute('animation', `property: position; to: ${currentPos.x} 1.0 0; dur: 1000; easing: easeInOutQuad`);
+            movingTubeAssembly.setAttribute('animation', `property: position; to: ${currentPos.x} 0.8 ${currentPos.z}; dur: 1000; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 1100));
-            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 1.0 0; dur: 1000; easing: easeInOutQuad`);
+            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 0.8 0; dur: 1000; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 1100));
             movingTubeAssembly.setAttribute('animation', `property: position; to: 0 0.05 0; dur: 800; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 900));
@@ -271,7 +262,7 @@
         btnHot.addEventListener('click', async () => {
             btnHot.disabled = true;
             statusText.innerText = "Đang đun nóng...";
-            await dipTubeIntoBeaker(0.5, 0.1);
+            await dipTubeIntoBeaker(0.4, 0.05, 0.3);
             liquid.setAttribute('animation__fade', { property: 'material.color', to: COLOR_STARCH, dur: 2000 });
             liquidBottom.setAttribute('animation__fade', { property: 'material.color', to: COLOR_STARCH, dur: 2000 });
             await new Promise(r => setTimeout(r, 2200));
@@ -283,7 +274,7 @@
         btnCold.addEventListener('click', async () => {
             btnCold.disabled = true;
             statusText.innerText = "Đang làm lạnh...";
-            await dipTubeIntoBeaker(-0.5, 0.1);
+            await dipTubeIntoBeaker(-0.4, 0.05, 0.3);
             liquid.setAttribute('animation__recolor', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 2000 });
             liquidBottom.setAttribute('animation__recolor', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 2000 });
             await new Promise(r => setTimeout(r, 2200));
