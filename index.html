@@ -114,7 +114,7 @@
                             <a-sphere position="0 -2 0" radius="0.35" theta-length="90" rotation="180 0 0" mixin="glass-mat"></a-sphere>
                             
                             <a-entity id="liquid-group">
-                                <a-cylinder id="liquid" height="0.01" radius="0.34" position="0 -2 0" material="color: #ffffff; opacity: 0.95; metalness: 0.1; roughness: 0.4"></a-cylinder>
+                                <a-cylinder id="liquid" height="0.01" radius="0.34" position="0 -2 0" material="color: #ffffff; opacity: 1; metalness: 0.1; roughness: 0.6"></a-cylinder>
                                 <a-circle id="liquid-surface" radius="0.34" position="0 -2 0" rotation="-90 0 0" material="color: #ffffff; opacity: 1"></a-circle>
                             </a-entity>
                         </a-entity>
@@ -177,6 +177,9 @@
         let currentStep = 0;
         let userRotationY = 0;
         let currentScale = 1;
+
+        const COLOR_STARCH = "#ffffff";
+        const COLOR_COMPLEX = "#000030"; // Màu xanh tím đen đậm đặc
 
         function autoLeveling() {
             if (marker.object3D.visible) {
@@ -251,12 +254,12 @@
                     property: 'rotation', to: '0 0 10', dur: 200, dir: 'alternate', loop: 6
                 });
                 
-                // Màu xanh tím đậm đặc trưng (theo video)
-                liquid.setAttribute('animation', { property: 'material.color', to: '#000033', dur: 1000 });
-                liquidSurface.setAttribute('animation', { property: 'material.color', to: '#000033', dur: 1000 });
+                // Chuyển màu sang xanh tím đậm đặc
+                liquid.setAttribute('animation', { property: 'material.color', to: COLOR_COMPLEX, dur: 1000 });
+                liquidSurface.setAttribute('animation', { property: 'material.color', to: COLOR_COMPLEX, dur: 1000 });
                 
                 await new Promise(r => setTimeout(r, 1200));
-                statusText.textContent = "Hiện tượng: Dung dịch chuyển sang màu xanh tím rất đậm.";
+                statusText.textContent = "Hiện tượng: Dung dịch chuyển sang màu xanh tím rất đậm và đặc.";
                 mainBtn.textContent = "Nhúng vào Nước Nóng";
                 currentStep = 2;
             }
@@ -272,17 +275,17 @@
                 testTubeContainer.setAttribute('animation', { property: 'position', to: '-1.8 1.2 -1', dur: 800, easing: 'easeInQuad' });
                 await new Promise(r => setTimeout(r, 900));
                 
-                // Mất màu nhạt dần (theo video - mất khoảng 5-6s)
-                liquid.setAttribute('animation', { property: 'material.color', to: '#ffffff', dur: 5000 });
-                liquidSurface.setAttribute('animation', { property: 'material.color', to: '#ffffff', dur: 5000 });
+                // Mất màu nhạt dần về trắng đục
+                liquid.setAttribute('animation', { property: 'material.color', to: COLOR_STARCH, dur: 5000 });
+                liquidSurface.setAttribute('animation', { property: 'material.color', to: COLOR_STARCH, dur: 5000 });
                 
                 await new Promise(r => setTimeout(r, 5200));
-                statusText.textContent = "Kết quả: Dung dịch mất màu, trở lại trạng thái trắng đục ban đầu.";
+                statusText.textContent = "Kết quả: Phức màu bị phá vỡ, dung dịch mất màu.";
                 mainBtn.textContent = "Nhúng vào Nước Lạnh";
                 currentStep = 3;
             }
             else if (currentStep === 3) {
-                statusText.textContent = "Bước 4: Để nguội. Iodine tái hấp phụ vào cấu trúc xoắn của Amylose.";
+                statusText.textContent = "Bước 4: Để nguội. Iodine tái hấp phụ vào cấu trúc xoắn.";
                 
                 testTubeContainer.setAttribute('animation', { property: 'position', to: '-1.8 3.5 -1', dur: 800, easing: 'easeOutQuad' });
                 await new Promise(r => setTimeout(r, 900));
@@ -293,12 +296,12 @@
                 testTubeContainer.setAttribute('animation', { property: 'position', to: '-2.2 1.2 1', dur: 800, easing: 'easeInQuad' });
                 await new Promise(r => setTimeout(r, 900));
                 
-                // Hiện màu lại nhanh hơn lúc mất màu (theo video)
-                liquid.setAttribute('animation', { property: 'material.color', to: '#000033', dur: 3000 });
-                liquidSurface.setAttribute('animation', { property: 'material.color', to: '#000033', dur: 3000 });
+                // Hiện màu lại đậm đặc
+                liquid.setAttribute('animation', { property: 'material.color', to: COLOR_COMPLEX, dur: 3000 });
+                liquidSurface.setAttribute('animation', { property: 'material.color', to: COLOR_COMPLEX, dur: 3000 });
                 
                 await new Promise(r => setTimeout(r, 3200));
-                statusText.textContent = "Kết quả: Màu xanh tím đậm xuất hiện trở lại.";
+                statusText.textContent = "Kết quả: Màu xanh tím đậm đặc xuất hiện trở lại.";
                 mainBtn.textContent = "Làm lại thí nghiệm";
                 currentStep = 4;
             } else {
