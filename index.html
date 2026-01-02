@@ -1,262 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mô phỏng AR: Hồ tinh bột + Iodine</title>
-    <!-- A-Frame Library -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <!-- AR.js for A-Frame -->
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
-        
-        #ui-container {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            width: 90%;
-            justify-content: center;
-        }
+<meta charset="utf-8">
+<title>AR Thí nghiệm hồ tinh bột + iodine</title>
 
-        .step-btn {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 12px 18px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            touch-action: manipulation;
-        }
+<!-- A-Frame & AR.js -->
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-        .step-btn:disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
+<style>
+body { margin:0; overflow:hidden; font-family: Arial; }
 
-        #info-box {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 400px;
-            text-align: center;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+#note {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.9);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  z-index: 999;
+}
 
-        #step-description {
-            color: #333;
-            margin-top: 5px;
-            font-size: 14px;
-        }
+#control {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  z-index: 999;
+}
 
-        h2 { margin: 0; font-size: 18px; color: #2e1a47; }
-    </style>
+button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  color: white;
+  background-color: #3f51b5;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+</style>
 </head>
 
-<body style="margin : 0px; overflow: hidden;">
-    <!-- UI Elements -->
-    <div id="info-box">
-        <h2>Thí nghiệm Hóa học AR</h2>
-        <div id="step-description">Vui lòng quét marker Hiro để bắt đầu.</div>
-    </div>
+<body>
 
-    <div id="ui-container">
-        <button id="btn-b1" class="step-btn">B1: Rót tinh bột</button>
-        <button id="btn-b2" class="step-btn" disabled>B2: Nhỏ Iodine</button>
-        <button id="btn-b3" class="step-btn" disabled>B3: Đun nóng</button>
-        <button id="btn-b4" class="step-btn" disabled>B4: Làm lạnh</button>
-    </div>
+<div id="note">Bước 1: Rót dung dịch hồ tinh bột 1% vào ống nghiệm</div>
 
-    <!-- AR Scene -->
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
-        
-        <!-- Hiro Marker -->
-        <a-marker preset="hiro">
-            <!-- Group to move everything up into "weightless" space -->
-            <a-entity position="0 1 0">
-                
-                <!-- Test Tube Outer Shell -->
-                <a-cylinder 
-                    id="test-tube" 
-                    position="0 0 0" 
-                    radius="0.2" 
-                    height="2" 
-                    material="color: #ffffff; opacity: 0.3; transparent: true; side: double; shininess: 100"
-                ></a-cylinder>
+<div id="control">
+  <button id="b1">B1: Chuẩn bị hồ tinh bột</button>
+  <button id="b2" disabled>B2: Nhỏ dung dịch iodine</button>
+  <button id="b3" disabled>B3: Nhúng nước nóng</button>
+  <button id="b4" disabled>B4: Nhúng nước lạnh</button>
+</div>
 
-                <!-- Liquid Inside -->
-                <a-cylinder 
-                    id="liquid" 
-                    position="0 -0.5 0" 
-                    radius="0.18" 
-                    height="0" 
-                    material="color: #ffffff; opacity: 0.8; transparent: false;"
-                ></a-cylinder>
+<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+  <a-marker preset="hiro">
 
-                <!-- Pipette (Dropper) -->
-                <a-entity id="pipette-group" position="0.5 1.5 0" rotation="0 0 -20">
-                    <!-- Tube of pipette -->
-                    <a-cylinder radius="0.05" height="1" material="color: #ccc; opacity: 0.5; transparent: true"></a-cylinder>
-                    <!-- Bulb of pipette -->
-                    <a-sphere position="0 0.55 0" radius="0.1" material="color: #8B0000"></a-sphere>
-                    <!-- Iodine drop inside pipette -->
-                    <a-sphere id="iodine-drop" position="0 -0.4 0" radius="0.04" material="color: #b8860b" visible="false"></a-sphere>
-                </a-entity>
+    <!-- Ống nghiệm nổi -->
+    <a-cylinder id="tube" position="0 1 0" radius="0.18" height="1.2"
+                color="#cccccc" opacity="0.25"></a-cylinder>
 
-                <!-- Floating Label for Liquid State -->
-                <a-text 
-                    id="liquid-label" 
-                    value="Ong nghiem rong" 
-                    position="0 1.2 0" 
-                    scale="0.6 0.6 0.6" 
-                    align="center" 
-                    color="#000"
-                ></a-text>
+    <!-- Dung dịch -->
+    <a-cylinder id="liquid" position="0 1 0" radius="0.16" height="0.6"
+                color="white" opacity="0.9"></a-cylinder>
 
-            </a-entity>
-        </a-marker>
+    <!-- Ống hút nhỏ giọt -->
+    <a-cylinder id="dropper" position="0.35 1.5 0" radius="0.03" height="0.3"
+                color="#ff5722" opacity="0.8"></a-cylinder>
 
-        <!-- Camera -->
-        <a-entity camera></a-entity>
-    </a-scene>
+    <!-- Nhãn -->
+    <a-text id="label" value=""
+            position="-1.2 2 0"
+            scale="0.6 0.6 0.6"
+            color="black"></a-text>
 
-    <script>
-        let currentStep = 0;
-        const btnB1 = document.getElementById('btn-b1');
-        const btnB2 = document.getElementById('btn-b2');
-        const btnB3 = document.getElementById('btn-b3');
-        const btnB4 = document.getElementById('btn-b4');
-        const description = document.getElementById('step-description');
-        const liquid = document.getElementById('liquid');
-        const liquidLabel = document.getElementById('liquid-label');
-        const pipette = document.getElementById('pipette-group');
-        const drop = document.getElementById('iodine-drop');
+  </a-marker>
 
-        // Color Constants
-        const COLOR_STARCH = "#ffffff";
-        const COLOR_COMPLEX = "#2e1a47";
+  <a-entity camera></a-entity>
+</a-scene>
 
-        // Step 1: Add Starch Solution
-        function step1() {
-            if (currentStep !== 0) return;
-            
-            // Animate liquid filling
-            let height = 0;
-            const interval = setInterval(() => {
-                height += 0.05;
-                liquid.setAttribute('height', height);
-                liquid.setAttribute('position', `0 ${-1 + height/2} 0`);
-                if (height >= 1) {
-                    clearInterval(interval);
-                    currentStep = 1;
-                    btnB1.disabled = true;
-                    btnB2.disabled = false;
-                    description.innerText = "Đã rót 2mL hồ tinh bột (trắng). Tiếp theo: nhỏ Iodine.";
-                    liquidLabel.setAttribute('value', "Ho tinh bot 1%");
-                }
-            }, 50);
-        }
+<script>
+const liquid = document.getElementById("liquid");
+const dropper = document.getElementById("dropper");
+const label = document.getElementById("label");
+const note = document.getElementById("note");
 
-        // Step 2: Add Iodine
-        function step2() {
-            if (currentStep !== 1) return;
-            btnB2.disabled = true;
-            
-            // Move pipette
-            pipette.setAttribute('animation', 'property: position; to: 0 1.8 0; dur: 1000; easing: easeInOutQuad');
-            pipette.setAttribute('animation__rot', 'property: rotation; to: 0 0 0; dur: 1000; easing: easeInOutQuad');
+const b1 = document.getElementById("b1");
+const b2 = document.getElementById("b2");
+const b3 = document.getElementById("b3");
+const b4 = document.getElementById("b4");
 
-            setTimeout(() => {
-                // Show drop and animate falling
-                drop.setAttribute('visible', 'true');
-                drop.setAttribute('animation', 'property: position; to: 0 -1.5 0; dur: 1000; easing: easeInQuad');
+// B1: Chuẩn bị hồ tinh bột
+b1.addEventListener('touchstart', () => {
+  liquid.setAttribute("color","white");          // hồ tinh bột
+  label.setAttribute("value","Dung dịch hồ tinh bột 1%");
+  note.innerText = "Bước 2: Nhỏ dung dịch iodine vào ống nghiệm";
+  b2.disabled = false;
+  b1.disabled = true;
+});
+b1.addEventListener('click', b1.ontouchstart);
 
-                setTimeout(() => {
-                    // Change liquid color
-                    liquid.setAttribute('animation', `property: material.color; to: ${COLOR_COMPLEX}; dur: 800`);
-                    drop.setAttribute('visible', 'false');
-                    
-                    setTimeout(() => {
-                        currentStep = 2;
-                        btnB3.disabled = false;
-                        description.innerText = "Iodine + Tinh bột -> Xanh tím. Tiếp theo: đun nóng ống nghiệm.";
-                        liquidLabel.setAttribute('value', "Xanh tim (I2 + Tinh bot)");
-                        
-                        // Move pipette back
-                        pipette.setAttribute('animation', 'property: position; to: 0.5 1.5 0; dur: 1000; easing: easeInOutQuad');
-                        pipette.setAttribute('animation__rot', 'property: rotation; to: 0 0 -20; dur: 1000; easing: easeInOutQuad');
-                    }, 800);
-                }, 1000);
-            }, 1100);
-        }
+// B2: Nhỏ dung dịch iodine
+b2.addEventListener('touchstart', () => {
+  dropper.setAttribute("position","0.35 1.2 0"); // ống hút hạ xuống
+  liquid.setAttribute("color","#2e1a47");        // xanh tím
+  label.setAttribute("value","Dung dịch hồ tinh bột + iodine → xanh tím");
+  note.innerText = "Bước 3: Nhúng nước nóng → mất màu";
+  b3.disabled = false;
+  b2.disabled = true;
+});
+b2.addEventListener('click', b2.ontouchstart);
 
-        // Step 3: Heat Up
-        function step3() {
-            if (currentStep !== 2) return;
-            btnB3.disabled = true;
-            description.innerText = "Đang đun nóng... Các phân tử Iodine thoát ra khỏi vòng xoắn.";
-            
-            // Fade color back to white
-            liquid.setAttribute('animation', `property: material.color; to: ${COLOR_STARCH}; dur: 2000`);
-            
-            setTimeout(() => {
-                currentStep = 3;
-                btnB4.disabled = false;
-                description.innerText = "Nhiệt độ cao: Mất màu. Tiếp theo: làm lạnh ống nghiệm.";
-                liquidLabel.setAttribute('value', "Mat mau (Nhiet do cao)");
-            }, 2000);
-        }
+// B3: Nhúng nước nóng
+b3.addEventListener('touchstart', () => {
+  liquid.setAttribute("color","white");          // mất màu
+  label.setAttribute("value","Nhúng nước nóng → màu biến mất");
+  note.innerText = "Bước 4: Nhúng nước lạnh → màu xanh tím tái hiện";
+  b4.disabled = false;
+  b3.disabled = true;
+});
+b3.addEventListener('click', b3.ontouchstart);
 
-        // Step 4: Cool Down
-        function step4() {
-            if (currentStep !== 3) return;
-            btnB4.disabled = true;
-            description.innerText = "Đang làm lạnh... Cấu trúc vòng xoắn tái lập, giữ phân tử Iodine.";
-            
-            // Color returns to purple
-            liquid.setAttribute('animation', `property: material.color; to: ${COLOR_COMPLEX}; dur: 2000`);
-            
-            setTimeout(() => {
-                currentStep = 4;
-                description.innerText = "Hoàn thành: Màu xanh tím đã quay trở lại.";
-                liquidLabel.setAttribute('value', "Xanh tim tro lai");
-            }, 2000);
-        }
+// B4: Nhúng nước lạnh
+b4.addEventListener('touchstart', () => {
+  liquid.setAttribute("color","#2e1a47");        // xanh tím quay lại
+  label.setAttribute("value","Nhúng nước lạnh → màu xanh tím tái hiện");
+  note.innerText = "Hoàn thành thí nghiệm";
+  dropper.setAttribute("position","0.35 1.5 0"); // ống hút trở lại
+  b4.disabled = true;
+});
+b4.addEventListener('click', b4.ontouchstart);
+</script>
 
-        // Event Listeners
-        const setupBtn = (btn, fn) => {
-            btn.addEventListener('click', fn);
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                fn();
-            });
-        };
-
-        setupBtn(btnB1, step1);
-        setupBtn(btnB2, step2);
-        setupBtn(btnB3, step3);
-        setupBtn(btnB4, step4);
-
-    </script>
 </body>
 </html>
