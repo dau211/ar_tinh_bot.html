@@ -72,7 +72,7 @@
     <div class="ui-panel">
         <div id="step-title" style="font-size: 18px; color: #ffcc00;">PHẢN ỨNG HỒ TINH BỘT + IODINE</div>
         <div id="instruction">Đang khởi tạo thí nghiệm...</div>
-        <div id="status-text">Đang hiển thị trong không gian (Markerless)</div>
+        <div id="status-text">Hiển thị trực tiếp (Không cần Marker)</div>
     </div>
 
     <div class="controls">
@@ -90,14 +90,15 @@
         gesture-detector
         id="scene">
         
-        <!-- Đặt vị trí anchor ở khoảng cách -1 đến -2 để người dùng nhìn thấy ngay mà không cần zoom -->
-        <a-entity id="anchor-point" position="0 -0.5 -1.5">
+        <!-- anchor-point: Điều chỉnh vị trí xuất hiện ban đầu (Gần camera hơn và thấp xuống một chút) -->
+        <a-entity id="anchor-point" position="0 -0.3 -1.2">
             
+            <!-- world-container: Tăng scale mặc định lên 1.2 để vật thể to hơn ngay lập tức -->
             <a-entity 
                 id="world-container" 
                 class="clickable"
                 gesture-handler="minScale: 0.1; maxScale: 5"
-                scale="0.6 0.6 0.6">
+                scale="1.2 1.2 1.2">
                 
                 <a-entity id="lab-equipment">
                     <!-- Giá đỡ ống nghiệm trung tâm -->
@@ -177,7 +178,7 @@
 
         window.onload = () => {
             statusText.innerText = "Sẵn sàng!";
-            instruction.innerText = "Các dụng cụ đã được đặt trước camera.";
+            instruction.innerText = "Dụng cụ đã được tự động căn chỉnh kích thước.";
         };
 
         async function runPipetteSequence(flaskPos, color, targetHeight, targetPos) {
