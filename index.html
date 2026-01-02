@@ -114,31 +114,31 @@
                         <a-box position="0 0 0" width="1.0" height="0.05" depth="0.4" color="#333"></a-box>
                         <a-torus position="0 1.5 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
                         
-                        <!-- Ống nghiệm -->
+                        <!-- Ống nghiệm thủy tinh -->
                         <a-cylinder id="test-tube" position="0 0.8 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.2; transparent: true; side: double"></a-cylinder>
                         <a-sphere position="0 0.1 0" radius="0.12" material="color: #fff; opacity: 0.2; transparent: true"></a-sphere>
                         
-                        <!-- CHẤT LỎNG ĐÔNG ĐẶC (Đồng nhất màu sắc) -->
+                        <!-- CHẤT LỎNG TRONG ỐNG NGHIỆM -->
                         <a-cylinder id="liquid" position="0 0.2 0" radius="0.118" height="0.01" material="shader: flat; opacity: 1.0; transparent: false" visible="false"></a-cylinder>
                         <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.118" material="shader: flat; opacity: 1.0; transparent: false" visible="false"></a-sphere>
                     </a-entity>
 
-                    <!-- Lọ hóa chất -->
+                    <!-- Lọ hóa chất (Bình nhựa trắng đậm) -->
                     <a-entity position="-0.7 0 0.5" id="flask-glucose">
-                        <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" color="#ffffff" opacity="0.3"></a-cone>
-                        <a-cylinder radius="0.06" height="0.1" position="0 0.35 0" color="#ffffff" opacity="0.3"></a-cylinder>
+                        <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" color="#f0f0f0"></a-cone>
+                        <a-cylinder radius="0.06" height="0.1" position="0 0.35 0" color="#f0f0f0"></a-cylinder>
                         <a-text value="Glucose" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
                     </a-entity>
 
                     <a-entity position="0 0 0.5" id="flask-naoh">
-                        <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" color="#ffffff" opacity="0.3"></a-cylinder>
-                        <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" color="#ffffff" opacity="0.3"></a-cylinder>
+                        <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" color="#f0f0f0"></a-cylinder>
+                        <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" color="#f0f0f0"></a-cylinder>
                         <a-text value="NaOH" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
                     </a-entity>
 
                     <a-entity position="0.7 0 0.5" id="flask-cuso4">
-                        <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" color="#318CE7" opacity="0.7"></a-cylinder>
-                        <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" color="#318CE7" opacity="0.7"></a-cylinder>
+                        <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" color="#f0f0f0"></a-cylinder>
+                        <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" color="#f0f0f0"></a-cylinder>
                         <a-text value="CuSO4" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
                     </a-entity>
 
@@ -151,6 +151,7 @@
                         <a-cone id="pipette-liquid-tip" radius-bottom="0.006" radius-top="0.003" height="0.08" position="0 -0.215 0" material="shader: flat; opacity: 1"></a-cone>
                     </a-entity>
 
+                    <!-- Giọt hóa chất -->
                     <a-sphere id="drop" radius="0.03" scale="0.6 1.8 0.6" color="#fff" position="0 1.5 0" visible="false" material="shader: flat;"></a-sphere>
                 </a-entity>
             </a-entity>
@@ -176,10 +177,10 @@
 
         let currentStep = 0;
 
-        // Định nghĩa màu sắc đúng bản chất hóa học
-        const COLOR_WATER_CLEAR = "#e0f7fa"; // Trong suốt như nước (Cyan rất nhạt để thấy khối)
-        const COLOR_CUSO4_BLUE = "#318CE7";  // Xanh lam trong suốt
-        const COLOR_COMPLEX_DARK_BLUE = "#000080"; // Xanh lam thẫm đặc quánh
+        // Định nghĩa màu sắc đúng bản chất hóa học (Dùng để hút và nhỏ giọt)
+        const COLOR_WATER_CLEAR = "#e0f7fa"; // Trong suốt như nước
+        const COLOR_CUSO4_BLUE = "#318CE7";  // Xanh lam của CuSO4
+        const COLOR_COMPLEX_DARK_BLUE = "#000080"; // Xanh lam thẫm của phức đồng
 
         marker.addEventListener('markerFound', () => {
             if (currentStep === 0) {
@@ -209,21 +210,24 @@
             pipetteLiqTip.setAttribute('visible', 'false');
             await new Promise(r => setTimeout(r, 500));
 
+            // Hạ pipette vào bình nhựa
             pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 0.35 ' + flaskPos.z + '; dur: 600');
             await new Promise(r => setTimeout(r, 700));
 
+            // Hiện màu hóa chất bên trong pipette
             pipetteLiqBody.setAttribute('material', 'color', color);
             pipetteLiqTip.setAttribute('material', 'color', color);
             pipetteLiqBody.setAttribute('visible', 'true');
             pipetteLiqTip.setAttribute('visible', 'true');
             await new Promise(r => setTimeout(r, 400));
 
+            // Nhấc lên và di chuyển tới ống nghiệm
             pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 1.3 ' + flaskPos.z + '; dur: 600');
             await new Promise(r => setTimeout(r, 700));
-
             pipette.setAttribute('animation', 'property: position; to: 0 1.6 0; dur: 800');
             await new Promise(r => setTimeout(r, 900));
 
+            // Nhỏ giọt với màu tương ứng
             drop.setAttribute('color', color);
             drop.setAttribute('visible', 'true');
             drop.setAttribute('position', '0 1.1 0');
@@ -238,9 +242,9 @@
             pipette.setAttribute('animation', 'property: position; to: 0 2.2 0; dur: 600');
             setTimeout(() => pipette.setAttribute('visible', 'false'), 650);
 
+            // Cập nhật chất lỏng trong ống nghiệm
             liquid.setAttribute('visible', 'true');
             liquidBottom.setAttribute('visible', 'true');
-            
             liquid.setAttribute('animation__height', { property: 'height', to: targetHeight, dur: 1000 });
             liquid.setAttribute('animation__pos', { property: 'position', to: targetPos, dur: 1000 });
             await new Promise(r => setTimeout(r, 1100));
@@ -248,7 +252,7 @@
 
         btnGl.addEventListener('click', async () => {
             btnGl.disabled = true;
-            instruction.innerText = "Đang thêm Glucose...";
+            instruction.innerText = "Đang hút Glucose...";
             await runPipetteSequence({x: -0.7, y: 0.4, z: 0.5}, COLOR_WATER_CLEAR, 0.3, "0 0.25 0");
             liquid.setAttribute('material', 'color', COLOR_WATER_CLEAR);
             liquidBottom.setAttribute('material', 'color', COLOR_WATER_CLEAR);
@@ -259,7 +263,7 @@
 
         btnNa.addEventListener('click', async () => {
             btnNa.disabled = true;
-            instruction.innerText = "Đang thêm NaOH...";
+            instruction.innerText = "Đang hút NaOH...";
             await runPipetteSequence({x: 0, y: 0.4, z: 0.5}, COLOR_WATER_CLEAR, 0.5, "0 0.35 0");
             liquid.setAttribute('material', 'color', COLOR_WATER_CLEAR);
             liquidBottom.setAttribute('material', 'color', COLOR_WATER_CLEAR);
@@ -270,29 +274,18 @@
 
         btnCu.addEventListener('click', async () => {
             btnCu.disabled = true;
-            instruction.innerText = "Đang thêm CuSO4...";
-            
+            instruction.innerText = "Đang hút CuSO4...";
             await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, COLOR_CUSO4_BLUE, 0.7, "0 0.45 0");
             
             statusText.innerText = "Phản ứng tạo phức đồng-glucose...";
             
-            // Chuyển màu toàn bộ khối chất lỏng sang màu xanh lam thẫm đồng nhất
-            liquid.setAttribute('material', {
-                shader: 'flat',
-                color: COLOR_COMPLEX_DARK_BLUE,
-                opacity: 1.0,
-                transparent: false
-            });
-            liquidBottom.setAttribute('material', {
-                shader: 'flat',
-                color: COLOR_COMPLEX_DARK_BLUE,
-                opacity: 1.0,
-                transparent: false
-            });
+            // Đổi màu khối chất lỏng thành màu xanh thẫm đồng nhất
+            liquid.setAttribute('material', { shader: 'flat', color: COLOR_COMPLEX_DARK_BLUE, opacity: 1.0, transparent: false });
+            liquidBottom.setAttribute('material', { shader: 'flat', color: COLOR_COMPLEX_DARK_BLUE, opacity: 1.0, transparent: false });
             
             await new Promise(r => setTimeout(r, 500));
             instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Kết quả: Phức đồng-glucose màu xanh lam thẫm, đặc quánh đồng nhất.<br>Dụng cụ luôn hướng thẳng đứng theo trọng lực.";
+            statusText.innerHTML = "Kết quả: Phức đồng-glucose màu xanh lam thẫm đồng nhất.<br>Bình chứa nhựa đục giúp bảo quản hóa chất tốt hơn.";
         });
     </script>
 </body>
