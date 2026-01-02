@@ -82,7 +82,6 @@
             color: #d35400;
         }
 
-        /* Hướng dẫn tương tác mới */
         .interaction-guide {
             position: absolute;
             top: 10px;
@@ -100,9 +99,9 @@
 <body style="margin: 0px; overflow: hidden;">
 
     <div class="interaction-guide">
+        🌟 Chế độ: <b>Tự động dựng đứng</b> (Auto-Leveling)<br>
         🖐️ 1 ngón: Xoay dụng cụ<br>
-        ✌️ 2 ngón: Phóng to/Thu nhỏ<br>
-        🔄 Giữ Shift + kéo: Chỉnh độ nghiêng
+        ✌️ 2 ngón: Phóng to/Thu nhỏ
     </div>
 
     <div id="ui-layer">
@@ -112,7 +111,7 @@
             <p>Trạng thái: <span id="status-text">Đang đợi thẻ Hiro...</span></p>
             <button id="action-btn" onclick="startReaction()">Nhỏ dung dịch Iodine</button>
             <button id="reset-btn" onclick="resetExperiment()" style="background: #7f8c8d; display: none;">Làm lại</button>
-            <p class="hint">Bạn có thể xoay và phóng to để nhìn rõ hơn!</p>
+            <p class="hint">Ống nghiệm sẽ luôn tự cân bằng theo hướng camera!</p>
         </div>
     </div>
 
@@ -121,9 +120,9 @@
         <a-entity light="type: ambient; color: #BBB; intensity: 1"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 4 2"></a-entity>
 
-        <a-marker preset="hiro">
-            <!-- Container chính có thể xoay, phóng to, thu nhỏ -->
-            <a-entity id="main-rig" scale="0.6 0.6 0.6" rotation="0 0 0">
+        <a-marker preset="hiro" id="hiro-marker">
+            <!-- main-rig sẽ chứa logic xoay để luôn dựng đứng -->
+            <a-entity id="main-rig" scale="0.6 0.6 0.6">
                 
                 <!-- GIÁ ĐỠ -->
                 <a-entity position="0 0 -0.5">
@@ -168,11 +167,13 @@
             </a-entity>
         </a-marker>
 
-        <a-entity camera></a-entity>
+        <a-entity camera id="main-camera"></a-entity>
     </a-scene>
 
     <script>
         const rig = document.querySelector('#main-rig');
+        const marker = document.querySelector('#hiro-marker');
+        const camera = document.querySelector('#main-camera');
         const liquid = document.querySelector('#liquid');
         const liquidBottom = document.querySelector('#liquid-bottom');
         const liquidSurface = document.querySelector('#liquid-surface');
@@ -184,17 +185,40 @@
 
         // Biến điều khiển tương tác
         let isDragging = false;
-        let prevX = 0, prevY = 0;
+        let prevX = 0;
         let initialDist = 0;
         let currentScale = 0.6;
+        let userRotationY = 0;
+
+        // --- HÀM TỰ ĐỘNG DỰNG ĐỨNG ---
+        // Chúng ta sẽ chạy hàm này liên tục để ép vật thể đứng thẳng so với camera
+        function updateLeveling() {
+            if (!marker.object3D.visible) {
+                requestAnimationFrame(updateLeveling);
+                return;
+            }
+
+            // Lấy rotation của marker trong không gian thế giới
+            const markerRotation = marker.object3D.rotation;
+
+            // Để vật thể đứng thẳng bất kể marker nghiêng thế nào:
+            // Chúng ta triệt tiêu góc xoay X và Z của marker để vật thể luôn song song với camera's Up
+            rig.object3D.rotation.x = -markerRotation.x;
+            rig.object3D.rotation.z = -markerRotation.z;
+            
+            // Góc xoay Y vẫn giữ nguyên để người dùng có thể xoay quanh ống nghiệm
+            rig.object3D.rotation.y = userRotationY - markerRotation.y;
+
+            requestAnimationFrame(updateLeveling);
+        }
+        updateLeveling();
 
         // Xử lý chạm/chuột để xoay và phóng to
-        document.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+        document.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; });
         document.addEventListener('touchstart', e => {
             if (e.touches.length === 1) {
                 isDragging = true;
                 prevX = e.touches[0].clientX;
-                prevY = e.touches[0].clientY;
             } else if (e.touches.length === 2) {
                 initialDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
             }
@@ -203,24 +227,15 @@
         document.addEventListener('mousemove', e => {
             if (!isDragging) return;
             let dx = e.clientX - prevX;
-            let dy = e.clientY - prevY;
-            
-            if (e.shiftKey) { // Chỉnh độ nghiêng khi giữ Shift
-                rig.object3D.rotation.x += dy * 0.01;
-            } else {
-                rig.object3D.rotation.y += dx * 0.01;
-            }
-            prevX = e.clientX; prevY = e.clientY;
+            userRotationY += dx * 0.01;
+            prevX = e.clientX;
         });
 
         document.addEventListener('touchmove', e => {
             if (e.touches.length === 1 && isDragging) {
                 let dx = e.touches[0].clientX - prevX;
-                let dy = e.touches[0].clientY - prevY;
-                rig.object3D.rotation.y += dx * 0.015;
-                // Có thể thêm xoay X nếu muốn điều chỉnh độ đứng
+                userRotationY += dx * 0.015;
                 prevX = e.touches[0].clientX;
-                prevY = e.touches[0].clientY;
             } else if (e.touches.length === 2) {
                 let dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
                 let zoom = dist / initialDist;
@@ -233,7 +248,6 @@
         document.addEventListener('mouseup', () => isDragging = false);
         document.addEventListener('touchend', () => isDragging = false);
         
-        // Zoom bằng con lăn chuột
         document.addEventListener('wheel', e => {
             currentScale -= e.deltaY * 0.001;
             currentScale = Math.min(Math.max(currentScale, 0.2), 2.0);
@@ -244,7 +258,7 @@
             actionBtn.disabled = true;
             statusText.textContent = "Đang nhỏ Iốt...";
 
-            // Di chuyển ống hút tới miệng ống nghiệm
+            // Chuyển động của ống hút
             dropper.setAttribute('animation', { property: 'position', to: '0 5 0', dur: 1000 });
             dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 0', dur: 1000 });
 
@@ -269,12 +283,11 @@
         }
 
         function resetExperiment() {
-            location.reload(); // Cách nhanh nhất để reset toàn bộ trạng thái AR
+            location.reload();
         }
 
-        // Cập nhật trạng thái khi tìm thấy marker
-        document.querySelector('a-marker').addEventListener('markerFound', () => {
-            statusText.textContent = "Đã tìm thấy thẻ Hiro. Sẵn sàng!";
+        marker.addEventListener('markerFound', () => {
+            statusText.textContent = "Đã tìm thấy thẻ Hiro. Đang tự cân bằng...";
         });
     </script>
 </body>
