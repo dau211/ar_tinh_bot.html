@@ -264,14 +264,28 @@
         btnCu.addEventListener('click', async () => {
             btnCu.disabled = true;
             instruction.innerText = "Đang thêm CuSO4...";
+            
+            // Màu CuSO4 khi đang trong pipette (xanh lam)
             await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, "#0000FF", 0.7, "0 0.45 0");
             
             statusText.innerText = "Đang tạo phức màu xanh thẫm...";
-            const darkBlue = "#000044"; 
             
-            // Thay đổi màu trực tiếp, loại bỏ animation color để tránh nháy trên mobile
-            liquid.setAttribute('material', 'color', darkBlue);
-            liquidBottom.setAttribute('material', 'color', darkBlue);
+            // KẾT QUẢ CUỐI CÙNG: Màu xanh thẫm đông đặc (shader: flat)
+            const darkBlue = "#000080"; 
+            
+            // Áp dụng thuộc tính đông đặc cho kết quả cuối
+            liquid.setAttribute('material', {
+                shader: 'flat',
+                color: darkBlue,
+                opacity: 1.0,
+                transparent: false
+            });
+            liquidBottom.setAttribute('material', {
+                shader: 'flat',
+                color: darkBlue,
+                opacity: 1.0,
+                transparent: false
+            });
             
             await new Promise(r => setTimeout(r, 500));
             instruction.innerText = "Thí nghiệm hoàn tất!";
