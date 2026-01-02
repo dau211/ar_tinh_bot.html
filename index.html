@@ -8,41 +8,46 @@
     <style>
         .ui-panel {
             position: fixed;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.85);
             color: white;
-            padding: 15px;
-            border-radius: 15px;
+            padding: 10px 15px;
+            border-radius: 12px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             z-index: 1000;
-            width: 90%;
-            max-width: 500px;
+            width: auto;
+            min-width: 300px;
+            max-width: 80%;
             border: 2px solid #00e5ff;
         }
         .controls {
             position: fixed;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            flex-direction: row; /* Sắp xếp hàng ngang */
+            gap: 8px;
             z-index: 1000;
-            flex-wrap: wrap;
             justify-content: center;
+            width: 95%;
+            overflow-x: auto; /* Cho phép cuộn nếu màn hình quá hẹp */
+            padding-bottom: 5px;
         }
         button {
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             background: #00e5ff;
             color: #000;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 13px;
+            font-size: 12px;
+            white-space: nowrap; /* Giữ chữ trên một dòng */
         }
         button:disabled {
             background: #555;
@@ -51,12 +56,25 @@
         }
         button:hover:not(:disabled) {
             background: #fff;
-            box-shadow: 0 0 15px #00e5ff;
+            box-shadow: 0 0 10px #00e5ff;
         }
         #status-text {
             margin-top: 5px;
-            font-size: 14px;
+            font-size: 13px;
             color: #ccc;
+        }
+        /* Tối ưu hóa cho màn hình ngang */
+        @media screen and (orientation: landscape) {
+            .ui-panel {
+                top: 5px;
+                padding: 5px 15px;
+            }
+            #step-title {
+                font-size: 16px !important;
+            }
+            #status-text {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -82,7 +100,7 @@
             <!-- Toàn bộ nội dung thí nghiệm được bọc trong một entity để có thể xoay bù trừ -->
             <a-entity id="world-container">
                 
-                <!-- GIÁ ĐỠ & ỐNG NGHIỆM CHÍNH (Vị trí trung tâm) -->
+                <!-- GIÁ ĐỠ & ỐNG NGHIỆM CHÍNH -->
                 <a-entity position="0 0 0">
                     <a-box position="0 0 0" width="1.0" height="0.05" depth="0.4" color="#333"></a-box>
                     <a-torus position="0 1.5 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
@@ -94,7 +112,7 @@
                     <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.11" material="color: #fff; opacity: 0; transparent: true" visible="false"></a-sphere>
                 </a-entity>
 
-                <!-- LỌ ĐỰNG HÓA CHẤT (Bố trí theo chiều ngang, lùi về phía sau so với chữ Hiro để không che ống nghiệm) -->
+                <!-- LỌ ĐỰNG HÓA CHẤT (Bố trí ngang phía sau để không che ống nghiệm) -->
                 <!-- Glucose Flask -->
                 <a-entity position="-0.7 0 0.5" id="flask-glucose">
                     <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" color="#ffffff" opacity="1"></a-cone>
@@ -126,7 +144,7 @@
                     <a-cone id="pipette-liquid-tip" radius-bottom="0.006" radius-top="0.003" height="0.08" position="0 -0.215 0" material="color: #fff; opacity: 1" visible="false"></a-cone>
                 </a-entity>
 
-                <!-- Giọt rơi -->
+                <!-- Giọt rơi hình bầu dục -->
                 <a-sphere id="drop" radius="0.025" scale="0.6 1.6 0.6" color="#fff" position="0 1.5 0" visible="false"></a-sphere>
             </a-entity>
 
@@ -153,7 +171,6 @@
 
         let currentStep = 0;
 
-        // Logic giữ vật thể luôn thẳng đứng bằng cách bù trừ xoay của marker
         marker.addEventListener('markerFound', () => {
             if (currentStep === 0) {
                 statusText.innerText = "Đã tìm thấy Marker!";
@@ -163,13 +180,14 @@
             }
         });
 
-        // Vòng lặp cập nhật hướng để dụng cụ luôn thẳng đứng
+        // Vòng lặp cập nhật hướng để dụng cụ luôn thẳng đứng so với trọng trường
         function updateOrientation() {
             if (marker.visible) {
-                const rotation = marker.object3D.rotation;
-                // Bù trừ xoay để "world" luôn hướng lên trên mặt đất thực tế
-                world.object3D.rotation.x = -rotation.x;
-                world.object3D.rotation.z = -rotation.z;
+                // Lấy quaternion xoay của marker
+                const markerRotation = marker.object3D.rotation;
+                // Áp dụng xoay ngược để world-container luôn giữ trục Y thẳng đứng
+                world.object3D.rotation.x = -markerRotation.x;
+                world.object3D.rotation.z = -markerRotation.z;
             }
             requestAnimationFrame(updateOrientation);
         }
@@ -194,7 +212,6 @@
             pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 1.3 ' + flaskPos.z + '; dur: 600');
             await new Promise(r => setTimeout(r, 700));
 
-            // Di chuyển đến ống nghiệm (z=0)
             pipette.setAttribute('animation', 'property: position; to: 0 1.6 0; dur: 800');
             await new Promise(r => setTimeout(r, 900));
 
@@ -272,7 +289,7 @@
             
             await new Promise(r => setTimeout(r, 1600));
             instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Kết quả: Dung dịch có màu xanh lam thẫm.<br>Giải thích: Glucose hòa tan Cu(OH)2 vừa tạo thành để tạo phức chất tan.";
+            statusText.innerHTML = "Kết quả: Dung dịch có màu xanh lam thẫm.<br>Giải thích: Glucose hòa tan Cu(OH)₂ vừa tạo thành để tạo phức chất tan.";
         });
     </script>
 </body>
