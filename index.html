@@ -8,7 +8,7 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <!-- AR.js for A-Frame -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <!-- Gesture Detector for Zooming -->
+    <!-- Gesture Detector for Zooming/Rotating -->
     <script src="https://raw.githack.com/fcor/arjs-gestures/master/dist/gestures.js"></script>
     <style>
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -101,10 +101,10 @@
 <body style="margin: 0px; overflow: hidden;">
     <div id="info-box">
         <h2>Phòng thí nghiệm hóa học ảo AR</h2>
-        <div id="step-description">Quét marker Hiro để hiện dụng cụ và hóa chất.</div>
+        <div id="step-description">Quét marker Hiro để hiển thị dụng cụ.</div>
     </div>
 
-    <div id="zoom-hint">Dùng 2 ngón tay để phóng to/thu nhỏ</div>
+    <div id="zoom-hint">Dùng 2 ngón tay để Phóng to / Xoay</div>
 
     <div id="ui-container">
         <button id="btn-b1" class="step-btn">B1: Lấy hồ tinh bột</button>
@@ -127,78 +127,82 @@
             cursor="fuse: false; rayOrigin: mouse;"
             id="marker-hiro"
         >
-            <!-- Toàn bộ hệ thống thí nghiệm có thể zoom/xoay -->
+            <!-- Toàn bộ hệ thống thí nghiệm nằm trong experiment-root -->
             <a-entity 
                 id="experiment-root" 
-                position="0 1 0" 
-                gesture-handler
+                position="0 0 0" 
+                class="clickable"
+                gesture-handler="minScale: 0.25; maxScale: 10"
             >
-                
-                <!-- BÀN THÍ NGHIỆM TƯỢNG TRƯNG -->
-                <a-box position="0 -1.1 0" width="3" height="0.1" depth="2" material="color: #444; opacity: 0.5"></a-box>
+                <!-- Dịch chuyển toàn bộ lên cao để "bay" trong không gian -->
+                <a-entity position="0 1 0">
+                    
+                    <!-- BÀN THÍ NGHIỆM TƯỢNG TRƯNG -->
+                    <a-box position="0 -1.1 0" width="3" height="0.05" depth="2" material="color: #444; opacity: 0.3"></a-box>
 
-                <!-- BÌNH ĐỰNG HỒ TINH BỘT (STARCH FLASK) -->
-                <a-entity id="flask-starch" position="-0.8 -1 0.5">
-                    <a-cylinder radius="0.25" height="0.5" material="color: #fff; opacity: 0.6; transparent: true"></a-cylinder>
-                    <a-cylinder radius="0.1" height="0.3" position="0 0.4 0" material="color: #fff; opacity: 0.6; transparent: true"></a-cylinder>
-                    <a-cylinder radius="0.24" height="0.3" position="0 -0.1 0" material="color: #f0f0f0; opacity: 0.9"></a-cylinder>
-                    <a-text value="Ho tinh bot" position="0 0.8 0" align="center" scale="0.3 0.3 0.3" color="#fff"></a-text>
+                    <!-- BÌNH ĐỰNG HỒ TINH BỘT -->
+                    <a-entity id="flask-starch" position="-0.8 -1 0.5">
+                        <a-cylinder radius="0.25" height="0.5" material="color: #ffffff; opacity: 0.5; transparent: true"></a-cylinder>
+                        <a-cylinder radius="0.1" height="0.3" position="0 0.4 0" material="color: #ffffff; opacity: 0.5; transparent: true"></a-cylinder>
+                        <a-cylinder radius="0.24" height="0.3" position="0 -0.1 0" material="color: #ffffff; opacity: 0.95"></a-cylinder>
+                        <a-text value="Ho tinh bot" position="0 0.8 0" align="center" scale="0.3 0.3 0.3" color="#fff"></a-text>
+                    </a-entity>
+
+                    <!-- BÌNH ĐỰNG IODINE -->
+                    <a-entity id="bottle-iodine" position="0.8 -1 0.5">
+                        <a-box width="0.3" height="0.5" depth="0.3" material="color: #3e2723; opacity: 0.9"></a-box>
+                        <a-cylinder radius="0.08" height="0.15" position="0 0.3 0" material="color: #222"></a-cylinder>
+                        <a-text value="Iodine/KI" position="0 0.6 0" align="center" scale="0.3 0.3 0.3" color="#fff"></a-text>
+                    </a-entity>
+
+                    <!-- BÌNH NƯỚC NÓNG -->
+                    <a-entity id="beaker-hot" position="-1 -1 -0.5">
+                        <a-cylinder radius="0.3" height="0.6" material="color: #add8e6; opacity: 0.3; transparent: true"></a-cylinder>
+                        <!-- Giả lập hơi nước bốc lên -->
+                        <a-cone position="0 0.4 0" radius-bottom="0.2" radius-top="0" height="0.4" material="color: #fff; opacity: 0.2; transparent: true" animation="property: scale; from: 1 1 1; to: 1.2 1.5 1.2; dir: alternate; dur: 1000; loop: true"></a-cone>
+                        <a-text value="Nuoc Nong" position="0 0.7 0" align="center" scale="0.3 0.3 0.3" color="#ff4444"></a-text>
+                    </a-entity>
+
+                    <!-- BÌNH NƯỚC LẠNH -->
+                    <a-entity id="beaker-cold" position="1 -1 -0.5">
+                        <a-cylinder radius="0.3" height="0.6" material="color: #add8e6; opacity: 0.3; transparent: true"></a-cylinder>
+                        <a-text value="Nuoc Lanh" position="0 0.7 0" align="center" scale="0.3 0.3 0.3" color="#4444ff"></a-text>
+                    </a-entity>
+
+                    <!-- ỐNG NGHIỆM CHÍNH -->
+                    <a-entity id="test-tube-group" position="0 0 0">
+                        <a-cylinder 
+                            id="test-tube" 
+                            radius="0.15" 
+                            height="1.8" 
+                            material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.6; roughness: 0.1"
+                        ></a-cylinder>
+                        <!-- Liquid inside -->
+                        <a-cylinder 
+                            id="liquid" 
+                            position="0 -0.85 0" 
+                            radius="0.14" 
+                            height="0.01" 
+                            material="color: #ffffff; opacity: 0.98; transparent: false;"
+                        ></a-cylinder>
+                        <a-text 
+                            id="liquid-label" 
+                            value="Ong nghiem rong" 
+                            position="0 1.1 0" 
+                            scale="0.5 0.5 0.5" 
+                            align="center" 
+                            color="#fff"
+                        ></a-text>
+                    </a-entity>
+
+                    <!-- PIPETTE (ỐNG HÚT) -->
+                    <a-entity id="pipette-group" position="0.6 1.2 0.3" rotation="0 0 -30">
+                        <a-cylinder radius="0.03" height="1.2" material="color: #eee; opacity: 0.6; transparent: true"></a-cylinder>
+                        <a-sphere position="0 0.6 0" radius="0.08" material="color: #8B0000"></a-sphere>
+                        <a-sphere id="iodine-drop" position="0 -0.55 0" radius="0.03" material="color: #b8860b" visible="false"></a-sphere>
+                    </a-entity>
+
                 </a-entity>
-
-                <!-- BÌNH ĐỰNG IODINE (IODINE BOTTLE) -->
-                <a-entity id="bottle-iodine" position="0.8 -1 0.5">
-                    <a-box width="0.3" height="0.5" depth="0.3" material="color: #3e2723; opacity: 0.8"></a-box>
-                    <a-cylinder radius="0.08" height="0.15" position="0 0.3 0" material="color: #222"></a-cylinder>
-                    <a-text value="Iodine/KI" position="0 0.6 0" align="center" scale="0.3 0.3 0.3" color="#fff"></a-text>
-                </a-entity>
-
-                <!-- BÌNH NƯỚC NÓNG (HOT WATER) -->
-                <a-entity id="beaker-hot" position="-1 -1 -0.5">
-                    <a-cylinder radius="0.3" height="0.6" material="color: #add8e6; opacity: 0.4; transparent: true"></a-cylinder>
-                    <a-text value="Nuoc Nong" position="0 0.7 0" align="center" scale="0.3 0.3 0.3" color="#ff4444"></a-text>
-                    <!-- Steam effect simulation -->
-                    <a-entity position="0 0.3 0" particle-system="color: #fff; size: 0.1; velocity: 0 1 0; opacity: 0.5" visible="true"></a-entity>
-                </a-entity>
-
-                <!-- BÌNH NƯỚC LẠNH (COLD WATER) -->
-                <a-entity id="beaker-cold" position="1 -1 -0.5">
-                    <a-cylinder radius="0.3" height="0.6" material="color: #add8e6; opacity: 0.4; transparent: true"></a-cylinder>
-                    <a-text value="Nuoc Lanh" position="0 0.7 0" align="center" scale="0.3 0.3 0.3" color="#4444ff"></a-text>
-                </a-entity>
-
-                <!-- ỐNG NGHIỆM CHÍNH (MAIN TEST TUBE) -->
-                <a-entity id="test-tube-group" position="0 0 0">
-                    <a-cylinder 
-                        id="test-tube" 
-                        radius="0.15" 
-                        height="1.8" 
-                        material="color: #ffffff; opacity: 0.3; transparent: true; side: double; metalness: 0.5; roughness: 0.1"
-                    ></a-cylinder>
-                    <!-- Liquid inside -->
-                    <a-cylinder 
-                        id="liquid" 
-                        position="0 -0.85 0" 
-                        radius="0.14" 
-                        height="0.01" 
-                        material="color: #ffffff; opacity: 0.95; transparent: false;"
-                    ></a-cylinder>
-                    <a-text 
-                        id="liquid-label" 
-                        value="Ong nghiem trong" 
-                        position="0 1.1 0" 
-                        scale="0.5 0.5 0.5" 
-                        align="center" 
-                        color="#fff"
-                    ></a-text>
-                </a-entity>
-
-                <!-- PIPETTE (ỐNG HÚT) -->
-                <a-entity id="pipette-group" position="0.6 1.2 0.3" rotation="0 0 -30">
-                    <a-cylinder radius="0.03" height="1.2" material="color: #eee; opacity: 0.6; transparent: true"></a-cylinder>
-                    <a-sphere position="0 0.6 0" radius="0.08" material="color: #8B0000"></a-sphere>
-                    <a-sphere id="iodine-drop" position="0 -0.55 0" radius="0.03" material="color: #b8860b" visible="false"></a-sphere>
-                </a-entity>
-
             </a-entity>
         </a-marker>
 
@@ -218,16 +222,15 @@
         const drop = document.getElementById('iodine-drop');
         const testTubeGroup = document.getElementById('test-tube-group');
 
-        const COLOR_STARCH = "#f8f9fa";
-        const COLOR_COMPLEX = "#1a0f2e"; // Màu xanh tím đậm đặc
+        const COLOR_STARCH = "#f0f0f0";
+        const COLOR_COMPLEX = "#0a0024"; // Màu xanh tím cực kỳ đậm
 
-        // B1: Lấy hồ tinh bột từ bình vào ống nghiệm
+        // B1: Rót hồ tinh bột
         function step1() {
             if (currentStep !== 0) return;
             btnB1.disabled = true;
-            description.innerText = "Đang rót hồ tinh bột 1% vào ống nghiệm...";
+            description.innerText = "Đang lấy dung dịch hồ tinh bột 1%...";
             
-            // Animation rót (giả định ống nghiệm di chuyển đến bình hoặc dung dịch tự sinh ra)
             let h = 0.01;
             const interval = setInterval(() => {
                 h += 0.04;
@@ -237,119 +240,107 @@
                     clearInterval(interval);
                     currentStep = 1;
                     btnB2.disabled = false;
-                    description.innerText = "Đã có dung dịch hồ tinh bột. Tiếp theo: Nhỏ Iodine.";
+                    description.innerText = "Hồ tinh bột đã sẵn sàng. Tiếp theo: Nhỏ Iodine.";
                     liquidLabel.setAttribute('value', "Ho tinh bot 1%");
                 }
             }, 50);
         }
 
-        // B2: Dùng Pipette hút Iodine và nhỏ vào
+        // B2: Nhỏ Iodine
         function step2() {
             if (currentStep !== 1) return;
             btnB2.disabled = true;
-            description.innerText = "Pipette đang lấy Iodine và nhỏ vào ống nghiệm...";
+            description.innerText = "Pipette đang lấy và nhỏ Iodine vào ống nghiệm...";
             
-            // Di chuyển Pipette đến bình Iodine
-            pipette.setAttribute('animation', 'property: position; to: 0.8 -0.2 0.5; dur: 1000; easing: easeInOutQuad');
+            // Lấy hóa chất
+            pipette.setAttribute('animation', 'property: position; to: 0.8 0.8 0.5; dur: 1000; easing: easeInOutQuad');
             
             setTimeout(() => {
-                // Di chuyển Pipette đến trên miệng ống nghiệm
-                pipette.setAttribute('animation', 'property: position; to: 0 1.5 0; dur: 1000; easing: easeInOutQuad');
+                // Di chuyển đến ống nghiệm
+                pipette.setAttribute('animation', 'property: position; to: 0 2.5 0; dur: 1000; easing: easeInOutQuad');
                 pipette.setAttribute('animation__rot', 'property: rotation; to: 0 0 0; dur: 1000; easing: easeInOutQuad');
 
                 setTimeout(() => {
-                    // Hiệu ứng giọt nhỏ xuống
+                    // Nhỏ giọt
                     drop.setAttribute('visible', 'true');
-                    drop.setAttribute('animation', 'property: position; to: 0 -1.2 0; dur: 800; easing: easeInQuad');
+                    drop.setAttribute('animation', 'property: position; to: 0 -1.5 0; dur: 1000; easing: easeInQuad');
 
                     setTimeout(() => {
-                        // Đổi màu đặc (xanh tím)
-                        liquid.setAttribute('animation', `property: material.color; to: ${COLOR_COMPLEX}; dur: 500`);
+                        // Đổi màu xanh đen
+                        liquid.setAttribute('animation', `property: material.color; to: ${COLOR_COMPLEX}; dur: 800`);
                         drop.setAttribute('visible', 'false');
                         
                         setTimeout(() => {
                             currentStep = 2;
                             btnB3.disabled = false;
-                            description.innerText = "Phản ứng tạo phức màu xanh tím đậm. Tiếp theo: Nhúng vào nước nóng.";
-                            liquidLabel.setAttribute('value', "Phuc tinh bot - Iodine");
+                            description.innerText = "Phản ứng tạo màu xanh tím đặc trưng. Tiếp theo: Đun nóng.";
+                            liquidLabel.setAttribute('value', "Phuc mau Xanh Tim");
                             
-                            // Trả Pipette về chỗ cũ
-                            pipette.setAttribute('animation', 'property: position; to: 0.6 1.2 0.3; dur: 1000; easing: easeInOutQuad');
+                            // Cất Pipette
+                            pipette.setAttribute('animation', 'property: position; to: 0.6 2.2 0.3; dur: 1000; easing: easeInOutQuad');
                             pipette.setAttribute('animation__rot', 'property: rotation; to: 0 0 -30; dur: 1000; easing: easeInOutQuad');
-                        }, 500);
-                    }, 800);
+                        }, 800);
+                    }, 1000);
                 }, 1100);
             }, 1100);
         }
 
-        // B3: Đun nóng (Nhúng vào bình nước nóng)
+        // B3: Đun nóng
         function step3() {
             if (currentStep !== 2) return;
             btnB3.disabled = true;
-            description.innerText = "Đang nhúng ống nghiệm vào nước nóng (70-80°C)...";
+            description.innerText = "Đang đun nóng ống nghiệm trong nước nóng...";
             
-            // Di chuyển ống nghiệm vào bình nước nóng
+            // Nhúng vào bình nóng
             testTubeGroup.setAttribute('animation', 'property: position; to: -1 -0.5 -0.5; dur: 1500; easing: easeInOutQuad');
             
             setTimeout(() => {
-                // Màu mất dần
+                // Mất màu
                 liquid.setAttribute('animation', `property: material.color; to: ${COLOR_STARCH}; dur: 3000`);
                 
                 setTimeout(() => {
                     currentStep = 3;
                     btnB4.disabled = false;
-                    description.innerText = "Nhiệt độ cao làm mạch tinh bột duỗi thẳng, Iodine thoát ra -> Mất màu.";
-                    liquidLabel.setAttribute('value', "Nhiet do cao (Mat mau)");
-                    
-                    // Nhấc ống nghiệm lên
+                    description.innerText = "Nhiệt độ cao làm đứt liên kết Hydro, Iodine rời mạch -> Mất màu.";
+                    liquidLabel.setAttribute('value', "Mat mau (70-80 C)");
                     testTubeGroup.setAttribute('animation', 'property: position; to: 0 0 0; dur: 1500; easing: easeInOutQuad');
                 }, 3000);
             }, 1600);
         }
 
-        // B4: Làm lạnh (Nhúng vào bình nước lạnh)
+        // B4: Làm lạnh
         function step4() {
             if (currentStep !== 3) return;
             btnB4.disabled = true;
-            description.innerText = "Đang nhúng ống nghiệm vào nước lạnh...";
+            description.innerText = "Đang làm lạnh ống nghiệm trong nước lạnh...";
             
-            // Di chuyển ống nghiệm vào bình nước lạnh
+            // Nhúng vào bình lạnh
             testTubeGroup.setAttribute('animation', 'property: position; to: 1 -0.5 -0.5; dur: 1500; easing: easeInOutQuad');
             
             setTimeout(() => {
-                // Màu xanh tím quay lại
+                // Hiện màu lại
                 liquid.setAttribute('animation', `property: material.color; to: ${COLOR_COMPLEX}; dur: 3000`);
                 
                 setTimeout(() => {
                     currentStep = 4;
-                    description.innerText = "Khi nguội, mạch tinh bột xoắn lại, giữ Iodine -> Màu xanh tím tái hiện.";
-                    liquidLabel.setAttribute('value', "Nguoi (Xanh tim tro lai)");
-                    
-                    // Đưa ống nghiệm về trung tâm
+                    description.innerText = "Ống nghiệm nguội, cấu trúc xoắn tái lập giữ Iodine -> Màu xanh tím trở lại.";
+                    liquidLabel.setAttribute('value', "Xanh tim tro lai");
                     testTubeGroup.setAttribute('animation', 'property: position; to: 0 0 0; dur: 1500; easing: easeInOutQuad');
-                    
-                    // Reset button
-                    const rBtn = document.createElement('button');
-                    rBtn.innerText = "Làm lại thí nghiệm";
-                    rBtn.className = "step-btn";
-                    rBtn.style.marginTop = "10px";
-                    rBtn.onclick = () => location.reload();
-                    document.getElementById('ui-container').appendChild(rBtn);
                 }, 3000);
             }, 1600);
         }
 
-        // Setup events
-        const setupBtn = (id, action) => {
+        // Setup Interaction
+        const setup = (id, act) => {
             const b = document.getElementById(id);
-            b.addEventListener('click', action);
-            b.addEventListener('touchstart', (e) => { e.preventDefault(); action(); });
+            b.addEventListener('click', act);
+            b.addEventListener('touchstart', (e) => { e.preventDefault(); act(); });
         }
 
-        setupBtn('btn-b1', step1);
-        setupBtn('btn-b2', step2);
-        setupBtn('btn-b3', step3);
-        setupBtn('btn-b4', step4);
+        setup('btn-b1', step1);
+        setup('btn-b2', step2);
+        setup('btn-b3', step3);
+        setup('btn-b4', step4);
 
     </script>
 </body>
