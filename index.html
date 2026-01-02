@@ -202,6 +202,7 @@
                 const inverseQuat = markerQuat.clone().invert();
                 
                 // Chúng ta muốn trục Y của dụng cụ luôn trùng với trục Y của thế giới thực
+                // Trong AR.js, camera thường cố định nên ta dùng quaternion bù trừ
                 world.object3D.quaternion.copy(inverseQuat);
                 
                 // Giữ cho vật thể luôn hướng về phía camera một chút để dễ nhìn
@@ -295,3 +296,4 @@
     </script>
 </body>
 </html>
+
