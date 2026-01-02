@@ -72,10 +72,6 @@
             font-size: 13px;
             color: #ccc;
         }
-        @media screen and (orientation: landscape) {
-            .ui-panel { top: 5px; padding: 5px 10px; }
-            #step-title { font-size: 15px !important; }
-        }
     </style>
 </head>
 
@@ -114,16 +110,20 @@
                 
                 <a-entity id="lab-equipment">
                     <a-entity position="0 0 0">
+                        <!-- Giá đỡ -->
                         <a-box position="0 0 0" width="1.0" height="0.05" depth="0.4" color="#333"></a-box>
                         <a-torus position="0 1.5 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
+                        
+                        <!-- Ống nghiệm -->
                         <a-cylinder id="test-tube" position="0 0.8 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.2; transparent: true; side: double"></a-cylinder>
                         <a-sphere position="0 0.1 0" radius="0.12" material="color: #fff; opacity: 0.2; transparent: true"></a-sphere>
                         
-                        <!-- Chất lỏng (Đã chỉnh đặc quánh với opacity 0.95) -->
-                        <a-cylinder id="liquid" position="0 0.2 0" radius="0.115" height="0.01" material="color: #fff; opacity: 0.95; transparent: false" visible="false"></a-cylinder>
-                        <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.115" material="color: #fff; opacity: 0.95; transparent: false" visible="false"></a-sphere>
+                        <!-- CHẤT LỎNG ĐÔNG ĐẶC: Không trong suốt, màu phẳng để tránh nháy -->
+                        <a-cylinder id="liquid" position="0 0.2 0" radius="0.118" height="0.01" material="shader: flat; color: #FFFFFF; opacity: 1.0; transparent: false" visible="false"></a-cylinder>
+                        <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.118" material="shader: flat; color: #FFFFFF; opacity: 1.0; transparent: false" visible="false"></a-sphere>
                     </a-entity>
 
+                    <!-- Lọ hóa chất -->
                     <a-entity position="-0.7 0 0.5" id="flask-glucose">
                         <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" color="#ffffff"></a-cone>
                         <a-cylinder radius="0.06" height="0.1" position="0 0.35 0" color="#ffffff"></a-cylinder>
@@ -142,15 +142,16 @@
                         <a-text value="CuSO4" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
                     </a-entity>
 
+                    <!-- Pipette -->
                     <a-entity id="pipette-container" position="0 2 0" visible="false">
                         <a-cylinder radius="0.007" height="0.4" position="0 0 0" color="#fff" opacity="0.6"></a-cylinder>
                         <a-cone radius-bottom="0.007" radius-top="0.002" height="0.15" position="0 -0.275 0" color="#fff" opacity="0.6"></a-cone>
                         <a-sphere radius="0.035" position="0 0.22" color="#8b0000" scale="1 1.5 1"></a-sphere>
-                        <a-cylinder id="pipette-liquid" radius="0.006" height="0.15" position="0 -0.1 0" material="opacity: 1" visible="false"></a-cylinder>
-                        <a-cone id="pipette-liquid-tip" radius-bottom="0.006" radius-top="0.003" height="0.08" position="0 -0.215 0" material="opacity: 1" visible="false"></a-cone>
+                        <a-cylinder id="pipette-liquid" radius="0.006" height="0.15" position="0 -0.1 0" material="shader: flat; opacity: 1"></a-cylinder>
+                        <a-cone id="pipette-liquid-tip" radius-bottom="0.006" radius-top="0.003" height="0.08" position="0 -0.215 0" material="shader: flat; opacity: 1"></a-cone>
                     </a-entity>
 
-                    <a-sphere id="drop" radius="0.03" scale="0.6 1.8 0.6" color="#fff" position="0 1.5 0" visible="false"></a-sphere>
+                    <a-sphere id="drop" radius="0.03" scale="0.6 1.8 0.6" color="#fff" position="0 1.5 0" visible="false" material="shader: flat;"></a-sphere>
                 </a-entity>
             </a-entity>
         </a-marker>
@@ -166,6 +167,7 @@
         const pipette = document.querySelector('#pipette-container');
         const pipetteLiqBody = document.querySelector('#pipette-liquid');
         const pipetteLiqTip = document.querySelector('#pipette-liquid-tip');
+        
         const btnGl = document.querySelector('#btn-glucose');
         const btnNa = document.querySelector('#btn-naoh');
         const btnCu = document.querySelector('#btn-cuso4');
@@ -242,9 +244,7 @@
         btnGl.addEventListener('click', async () => {
             btnGl.disabled = true;
             instruction.innerText = "Đang thêm Glucose...";
-            await runPipetteSequence({x: -0.7, y: 0.4, z: 0.5}, "#ffffff", 0.3, "0 0.25 0");
-            liquid.setAttribute('material', 'color', '#ffffff');
-            liquidBottom.setAttribute('material', 'color', '#ffffff');
+            await runPipetteSequence({x: -0.7, y: 0.4, z: 0.5}, "#FFFFFF", 0.3, "0 0.25 0");
             statusText.innerText = "Đã thêm Glucose.";
             instruction.innerText = "Bước 2: Thêm dung dịch NaOH";
             btnNa.disabled = false;
@@ -253,11 +253,10 @@
         btnNa.addEventListener('click', async () => {
             btnNa.disabled = true;
             instruction.innerText = "Đang thêm NaOH...";
-            // NaOH trong suốt nên màu vẫn giữ tông trắng đục của hỗn hợp
-            await runPipetteSequence({x: 0, y: 0.4, z: 0.5}, "#f0f0f0", 0.5, "0 0.35 0");
-            liquid.setAttribute('material', 'color', '#eeeeee');
-            liquidBottom.setAttribute('material', 'color', '#eeeeee');
-            statusText.innerText = "Đã thêm NaOH. Dung dịch kiềm sẵn sàng.";
+            await runPipetteSequence({x: 0, y: 0.4, z: 0.5}, "#E0E0E0", 0.5, "0 0.35 0");
+            liquid.setAttribute('material', 'color', '#E0E0E0');
+            liquidBottom.setAttribute('material', 'color', '#E0E0E0');
+            statusText.innerText = "Đã thêm NaOH.";
             instruction.innerText = "Bước 3: Thêm dung dịch CuSO4";
             btnCu.disabled = false;
         });
@@ -265,30 +264,18 @@
         btnCu.addEventListener('click', async () => {
             btnCu.disabled = true;
             instruction.innerText = "Đang thêm CuSO4...";
-            await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, "#0000ff", 0.7, "0 0.45 0");
+            await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, "#0000FF", 0.7, "0 0.45 0");
             
-            statusText.innerText = "Phản ứng: Đang hòa tan Cu(OH)2...";
-            const darkBlue = "#00008b"; // Màu xanh lam thẫm (đặc)
+            statusText.innerText = "Đang tạo phức màu xanh thẫm...";
+            const darkBlue = "#000044"; 
             
-            // Chuyển màu mượt mà không bị nhảy
-            liquid.setAttribute('animation__color', { 
-                property: 'material.color', 
-                type: 'color', 
-                from: "#eeeeee", 
-                to: darkBlue, 
-                dur: 2000 
-            });
-            liquidBottom.setAttribute('animation__color', { 
-                property: 'material.color', 
-                type: 'color', 
-                from: "#eeeeee", 
-                to: darkBlue, 
-                dur: 2000 
-            });
+            // Thay đổi màu trực tiếp, loại bỏ animation color để tránh nháy trên mobile
+            liquid.setAttribute('material', 'color', darkBlue);
+            liquidBottom.setAttribute('material', 'color', darkBlue);
             
-            await new Promise(r => setTimeout(r, 2100));
+            await new Promise(r => setTimeout(r, 500));
             instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Kết quả: Dung dịch phức đồng-glucose đặc quánh màu xanh thẫm.<br>Glucose đã hòa tan kết tủa Cu(OH)₂.";
+            statusText.innerHTML = "Kết quả: Phức đồng-glucose màu xanh thẫm đặc quánh.<br>Dụng cụ luôn hướng thẳng đứng theo trọng lực.";
         });
     </script>
 </body>
