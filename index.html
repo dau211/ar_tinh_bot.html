@@ -10,28 +10,7 @@
 
 <style>
 body { margin:0; overflow:hidden; font-family: Arial; }
-#control {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-button {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-  color: white;
-  background-color: #3f51b5;
-  cursor: pointer;
-}
-button:disabled {
-  background-color: #bdbdbd;
-  cursor: not-allowed;
-}
+
 #note {
   position: fixed;
   top: 10px;
@@ -41,6 +20,33 @@ button:disabled {
   padding: 8px 14px;
   border-radius: 6px;
   font-size: 16px;
+  z-index: 999;
+}
+
+#control {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  z-index: 999;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  color: white;
+  background-color: #3f51b5;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
 }
 </style>
 </head>
@@ -90,31 +96,34 @@ const b1 = document.getElementById("b1");
 const b2 = document.getElementById("b2");
 const b3 = document.getElementById("b3");
 
-// Bước 1: Chuẩn bị dung dịch hồ tinh bột
-b1.onclick = () => {
+// B1: Chuẩn bị dung dịch hồ tinh bột
+b1.addEventListener('touchstart', () => {
   dd.setAttribute("color","white");
   label.setAttribute("value","Dung dịch hồ tinh bột 1%");
   note.innerText = "Bước 2: Nhỏ dung dịch iodine vào ống nghiệm";
   b2.disabled = false;
   b1.disabled = true;
-};
+});
+b1.addEventListener('click', b1.ontouchstart); // hỗ trợ desktop
 
-// Bước 2: Nhỏ dung dịch iodine
-b2.onclick = () => {
+// B2: Nhỏ dung dịch iodine
+b2.addEventListener('touchstart', () => {
   dropper.setAttribute("position","0.35 0.5 0"); // hạ ống hút
   note.innerText = "Bước 3: Lắc đều ống nghiệm";
   b3.disabled = false;
   b2.disabled = true;
-};
+});
+b2.addEventListener('click', b2.ontouchstart);
 
-// Bước 3: Lắc đều
-b3.onclick = () => {
+// B3: Lắc đều
+b3.addEventListener('touchstart', () => {
   dd.setAttribute("color","#2e1a47"); // dung dịch đổi màu xanh tím
   label.setAttribute("value","Dung dịch hồ tinh bột + iodine → màu xanh tím");
   note.innerText = "Hoàn thành thí nghiệm";
   dropper.setAttribute("position","0.35 0.9 0"); // ống hút trở lại
   b3.disabled = true;
-};
+});
+b3.addEventListener('click', b3.ontouchstart);
 </script>
 
 </body>
