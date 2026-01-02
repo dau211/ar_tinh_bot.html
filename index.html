@@ -24,6 +24,7 @@
             min-width: 280px;
             max-width: 90%;
             border: 2px solid #00e5ff;
+            transition: all 0.3s ease;
             pointer-events: none;
         }
         .controls {
@@ -37,14 +38,14 @@
             z-index: 1000;
             justify-content: flex-start;
             width: 90%;
-            overflow-x: auto; /* Cho phép cuộn ngang các nút */
+            overflow-x: auto; 
             padding: 10px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
-            scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+            scrollbar-width: none;
         }
         .controls::-webkit-scrollbar {
-            display: none; /* Ẩn scrollbar trên Chrome/Safari */
+            display: none;
         }
         button {
             padding: 12px 18px;
@@ -57,7 +58,7 @@
             transition: 0.3s;
             font-size: 13px;
             white-space: nowrap;
-            flex-shrink: 0; /* Không để nút bị co lại */
+            flex-shrink: 0;
         }
         button:disabled {
             background: #555;
@@ -73,9 +74,31 @@
             font-size: 13px;
             color: #ccc;
         }
+        /* Tối ưu hóa cho màn hình ngang: Đưa bảng thông tin về một góc */
         @media screen and (orientation: landscape) {
-            .ui-panel { top: 5px; padding: 5px 10px; }
-            #step-title { font-size: 15px !important; }
+            .ui-panel {
+                top: 10px;
+                left: 10px;
+                transform: none;
+                text-align: left;
+                min-width: 200px;
+                max-width: 35%;
+                padding: 8px 12px;
+            }
+            #step-title {
+                font-size: 14px !important;
+            }
+            #status-text {
+                font-size: 11px;
+            }
+            #instruction {
+                font-size: 12px;
+            }
+            .controls {
+                bottom: 10px;
+                width: 60%;
+                left: 70%;
+            }
         }
     </style>
 </head>
@@ -108,27 +131,22 @@
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;">
             
-            <!-- world-container: Chứa toàn bộ vật thể để áp dụng bù trừ xoay và zoom -->
             <a-entity 
                 id="world-container" 
                 class="clickable"
                 gesture-handler="minScale: 0.5; maxScale: 3">
                 
-                <!-- NHÓM DỤNG CỤ THÍ NGHIỆM -->
                 <a-entity id="lab-equipment">
-                    <!-- GIÁ ĐỠ & ỐNG NGHIỆM -->
                     <a-entity position="0 0 0">
                         <a-box position="0 0 0" width="1.0" height="0.05" depth="0.4" color="#333"></a-box>
                         <a-torus position="0 1.5 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
                         <a-cylinder id="test-tube" position="0 0.8 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.3; transparent: true; side: double"></a-cylinder>
                         <a-sphere position="0 0.1 0" radius="0.12" material="color: #fff; opacity: 0.3; transparent: true"></a-sphere>
                         
-                        <!-- Chất lỏng đặc -->
                         <a-cylinder id="liquid" position="0 0.2 0" radius="0.11" height="0.01" material="color: #fff; opacity: 0; transparent: true" visible="false"></a-cylinder>
                         <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.11" material="color: #fff; opacity: 0; transparent: true" visible="false"></a-sphere>
                     </a-entity>
 
-                    <!-- CÁC LỌ HÓA CHẤT (Danh pháp Anh) -->
                     <a-entity position="-0.7 0 0.5" id="flask-glucose">
                         <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" color="#ffffff"></a-cone>
                         <a-cylinder radius="0.06" height="0.1" position="0 0.35 0" color="#ffffff"></a-cylinder>
@@ -147,7 +165,6 @@
                         <a-text value="CuSO4" position="0 0.5 0" scale="0.3 0.3 0.3" align="center" color="#fff"></a-text>
                     </a-entity>
 
-                    <!-- PIPETTE -->
                     <a-entity id="pipette-container" position="0 2 0" visible="false">
                         <a-cylinder radius="0.007" height="0.4" position="0 0 0" color="#fff" opacity="0.6"></a-cylinder>
                         <a-cone radius-bottom="0.007" radius-top="0.002" height="0.15" position="0 -0.275 0" color="#fff" opacity="0.6"></a-cone>
@@ -191,21 +208,12 @@
             }
         });
 
-        // Hàm cập nhật hướng thông minh: Bù trừ xoay để dụng cụ luôn thẳng đứng với mặt đất
         function updateOrientation() {
             if (marker.visible) {
-                // Lấy góc quay của marker so với camera (thế giới thực)
                 const markerQuat = new THREE.Quaternion();
                 marker.object3D.getWorldQuaternion(markerQuat);
-                
-                // Nghịch đảo góc quay để bù trừ cho world-container
                 const inverseQuat = markerQuat.clone().invert();
-                
-                // Chúng ta muốn trục Y của dụng cụ luôn trùng với trục Y của thế giới thực
-                // Trong AR.js, camera thường cố định nên ta dùng quaternion bù trừ
                 world.object3D.quaternion.copy(inverseQuat);
-                
-                // Giữ cho vật thể luôn hướng về phía camera một chút để dễ nhìn
                 world.object3D.rotation.y += Math.PI; 
             }
             requestAnimationFrame(updateOrientation);
@@ -214,7 +222,6 @@
 
         async function runPipetteSequence(flaskPos, color, targetHeight, targetPos) {
             pipette.setAttribute('visible', 'true');
-            // Pipette di chuyển tương đối trong hệ tọa độ world đã được bù trừ
             pipette.setAttribute('position', {x: flaskPos.x, y: 1.0, z: flaskPos.z});
             pipetteLiqBody.setAttribute('visible', 'false');
             pipetteLiqTip.setAttribute('visible', 'false');
@@ -291,7 +298,7 @@
             liquidBottom.setAttribute('animation__color', { property: 'material.color', type: 'color', from: "#1e90ff", to: darkBlue, dur: 1500 });
             await new Promise(r => setTimeout(r, 1600));
             instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Kết quả: Dung dịch có màu xanh lam thẫm.<br>Giải thích: Glucose hòa tan Cu(OH)₂ vừa tạo thành để tạo phức chất tan.";
+            statusText.innerHTML = "Kết quả: Dung dịch có màu xanh lam thẫm.<br>Giải thích: Glucose hòa tan Cu(OH)₂ tạo phức chất tan.";
         });
     </script>
 </body>
