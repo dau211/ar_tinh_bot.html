@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Thí nghiệm AR Tương tác: Trình tự Glucose + NaOH + CuSO4</title>
+    <title>AR Chemistry: Glucose + NaOH + CuSO4</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
@@ -11,7 +11,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: white;
             padding: 15px;
             border-radius: 15px;
@@ -63,65 +63,74 @@
 
 <body style="margin: 0; overflow: hidden;">
     <div class="ui-panel">
-        <div id="step-title" style="font-size: 18px; color: #00e5ff;">PHÒNG THÍ NGHIỆM ẢO (TRÌNH TỰ MỚI)</div>
-        <div id="instruction">Quét mã Hiro để bắt đầu thí nghiệm</div>
-        <div id="status-text">Đang chờ camera...</div>
+        <div id="step-title" style="font-size: 18px; color: #00e5ff;">VIRTUAL CHEMISTRY LAB</div>
+        <div id="instruction">Scan Hiro marker to start</div>
+        <div id="status-text">Waiting for camera...</div>
     </div>
 
     <div class="controls">
-        <button id="btn-glucose" disabled>1. Thêm Glucose</button>
-        <button id="btn-naoh" disabled>2. Thêm NaOH</button>
-        <button id="btn-cuso4" disabled>3. Thêm CuSO₄</button>
-        <button id="btn-reset" onclick="location.reload()">Làm lại</button>
+        <button id="btn-glucose" disabled>1. Add Glucose</button>
+        <button id="btn-naoh" disabled>2. Add NaOH</button>
+        <button id="btn-cuso4" disabled>3. Add CuSO₄</button>
+        <button id="btn-reset" onclick="location.reload()">Reset</button>
     </div>
 
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <a-marker preset="hiro" id="chemistry-marker">
             
-            <!-- GIÁ ĐỠ & ỐNG NGHIỆM CHÍNH -->
+            <!-- GIÁ ĐỠ & ỐNG NGHIỆM CHÍNH (Cấu tạo chuẩn môn hóa) -->
             <a-entity position="0 0 0">
-                <a-box position="0 0 0" width="1.2" height="0.1" depth="0.6" color="#444"></a-box>
+                <a-box position="0 0 0" width="1.0" height="0.05" depth="0.4" color="#333"></a-box>
+                <!-- Vành ống nghiệm -->
+                <a-torus position="0 1.5 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.3; transparent: true"></a-torus>
+                <!-- Thân ống nghiệm thủy tinh -->
                 <a-cylinder id="test-tube" position="0 0.8 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.2; transparent: true; side: double"></a-cylinder>
+                <!-- Đáy ống nghiệm bo tròn chuẩn -->
                 <a-sphere position="0 0.1 0" radius="0.12" material="color: #fff; opacity: 0.2; transparent: true"></a-sphere>
                 
+                <!-- Chất lỏng bên trong (Đậm đặc) -->
                 <a-cylinder id="liquid" position="0 0.2 0" radius="0.11" height="0.01" material="color: #fff; opacity: 0; transparent: true" visible="false"></a-cylinder>
                 <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.11" material="color: #fff; opacity: 0; transparent: true" visible="false"></a-sphere>
             </a-entity>
 
-            <!-- LỌ ĐỰNG HÓA CHẤT -->
-            <a-entity position="-0.8 0 0" id="flask-glucose">
-                <a-cone radius-bottom="0.25" radius-top="0.08" height="0.4" position="0 0.2 0" color="#fff" opacity="0.6"></a-cone>
-                <a-cylinder radius="0.08" height="0.15" position="0 0.45 0" color="#fff" opacity="0.6"></a-cylinder>
-                <a-text value="Glucose" position="0 0.6 0" scale="0.3 0.3 0.3" align="center"></a-text>
+            <!-- LỌ ĐỰNG HÓA CHẤT (Sắp xếp khoa học, ngắn gọn) -->
+            <!-- Glucose Flask -->
+            <a-entity position="-0.5 0 -0.4" id="flask-glucose">
+                <a-cone radius-bottom="0.2" radius-top="0.06" height="0.3" position="0 0.15 0" color="#fff" opacity="0.7"></a-cone>
+                <a-cylinder radius="0.06" height="0.1" position="0 0.35 0" color="#fff" opacity="0.7"></a-cylinder>
+                <a-text value="Glucose" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#fff"></a-text>
             </a-entity>
 
-            <a-entity position="0 0 0.5" id="flask-naoh">
-                <a-cylinder radius="0.15" height="0.3" position="0 0.15 0" color="#f8f8f8" opacity="0.6"></a-cylinder>
-                <a-cylinder radius="0.06" height="0.2" position="0 0.4 0" color="#f8f8f8" opacity="0.6"></a-cylinder>
-                <a-text value="NaOH" position="0 0.6 0" scale="0.3 0.3 0.3" align="center"></a-text>
+            <!-- NaOH Flask -->
+            <a-entity position="0 0 -0.4" id="flask-naoh">
+                <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" color="#f8f8f8" opacity="0.7"></a-cylinder>
+                <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" color="#f8f8f8" opacity="0.7"></a-cylinder>
+                <a-text value="NaOH" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#fff"></a-text>
             </a-entity>
 
-            <a-entity position="0.8 0 0" id="flask-cuso4">
-                <a-cylinder radius="0.15" height="0.3" position="0 0.15 0" color="#0000FF" opacity="0.7"></a-cylinder>
-                <a-cylinder radius="0.06" height="0.2" position="0 0.4 0" color="#0000FF" opacity="0.7"></a-cylinder>
-                <a-text value="CuSO4" position="0 0.6 0" scale="0.3 0.3 0.3" align="center"></a-text>
+            <!-- CuSO4 Flask -->
+            <a-entity position="0.5 0 -0.4" id="flask-cuso4">
+                <a-cylinder radius="0.12" height="0.25" position="0 0.125 0" color="#0000FF" opacity="0.8"></a-cylinder>
+                <a-cylinder radius="0.05" height="0.15" position="0 0.3 0" color="#0000FF" opacity="0.8"></a-cylinder>
+                <a-text value="CuSO4" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#fff"></a-text>
             </a-entity>
 
-            <!-- ỐNG HÚT PIPETTE CAO CẤP (Nhỏ gọn, chi tiết) -->
+            <!-- ỐNG HÚT PIPETTE (Ngắn lại, bầu đẹp, chi tiết) -->
             <a-entity id="pipette-container" position="0 2 0" visible="false">
-                <!-- Thân ống (Thanh mảnh hơn) -->
-                <a-cylinder radius="0.008" height="0.8" position="0 0 0" color="#fff" opacity="0.4"></a-cylinder>
-                <!-- Đầu nhọn (Thuôn dài) -->
-                <a-cone radius-bottom="0.008" radius-top="0.002" height="0.3" position="0 -0.55 0" color="#fff" opacity="0.4"></a-cone>
-                <!-- Bầu bóp cao su (Hình giọt nước ngược) -->
-                <a-sphere radius="0.035" position="0 0.4 0" color="#d32f2f" scale="1 1.3 1"></a-sphere>
+                <!-- Thân ống ngắn hơn -->
+                <a-cylinder radius="0.007" height="0.5" position="0 0 0" color="#fff" opacity="0.5"></a-cylinder>
+                <!-- Đầu nhọn thuôn -->
+                <a-cone radius-bottom="0.007" radius-top="0.002" height="0.2" position="0 -0.35 0" color="#fff" opacity="0.5"></a-cone>
+                <!-- Bầu bóp cao su (Màu đỏ đậm đặc trưng) -->
+                <a-sphere radius="0.03" position="0 0.25 0" color="#b71c1c" scale="1 1.4 1"></a-sphere>
                 
-                <!-- Chất lỏng bên trong pipette (Chỉ hiện khi đã hút) -->
-                <a-cylinder id="pipette-liquid" radius="0.007" height="0.3" position="0 -0.2 0" material="color: #fff; opacity: 0.9" visible="false"></a-cylinder>
-                <a-cone id="pipette-liquid-tip" radius-bottom="0.007" radius-top="0.003" height="0.15" position="0 -0.425 0" material="color: #fff; opacity: 0.9" visible="false"></a-cone>
+                <!-- Chất lỏng bên trong pipette -->
+                <a-cylinder id="pipette-liquid" radius="0.006" height="0.2" position="0 -0.15 0" material="color: #fff; opacity: 0.95" visible="false"></a-cylinder>
+                <a-cone id="pipette-liquid-tip" radius-bottom="0.006" radius-top="0.003" height="0.1" position="0 -0.3 0" material="color: #fff; opacity: 0.95" visible="false"></a-cone>
             </a-entity>
 
-            <a-sphere id="drop" radius="0.015" color="#fff" position="0 1.5 0" visible="false"></a-sphere>
+            <!-- Giọt rơi hình bầu dục (Oval drop) -->
+            <a-sphere id="drop" radius="0.015" scale="0.7 1.3 0.7" color="#fff" position="0 1.5 0" visible="false"></a-sphere>
 
         </a-marker>
         <a-entity camera></a-entity>
@@ -147,120 +156,120 @@
 
         marker.addEventListener('markerFound', () => {
             if (currentStep === 0) {
-                statusText.innerText = "Đã nhận diện marker!";
-                instruction.innerText = "Bước 1: Lấy dung dịch Glucose";
+                statusText.innerText = "Marker Found!";
+                instruction.innerText = "Step 1: Get Glucose solution";
                 btnGl.disabled = false;
                 currentStep = 1;
             }
         });
 
         async function runPipetteSequence(flaskPos, color, targetHeight, targetPos) {
-            // 1. Di chuyển pipette đến phía trên lọ hóa chất
+            // 1. Move pipette above flask
             pipette.setAttribute('visible', 'true');
-            pipette.setAttribute('position', {x: flaskPos.x, y: 1.2, z: flaskPos.z});
+            pipette.setAttribute('position', {x: flaskPos.x, y: 1.0, z: flaskPos.z});
             pipetteLiqBody.setAttribute('visible', 'false');
             pipetteLiqTip.setAttribute('visible', 'false');
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 500));
 
-            // 2. Hạ xuống để hút hóa chất
-            pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 0.6 ' + flaskPos.z + '; dur: 800');
-            await new Promise(r => setTimeout(r, 900));
+            // 2. Dip into liquid
+            pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 0.4 ' + flaskPos.z + '; dur: 600');
+            await new Promise(r => setTimeout(r, 700));
 
-            // 3. Hút dịch (Hiện màu hóa chất trong pipette)
+            // 3. Suction (Fill pipette)
             pipetteLiqBody.setAttribute('material', 'color', color);
             pipetteLiqTip.setAttribute('material', 'color', color);
             pipetteLiqBody.setAttribute('visible', 'true');
             pipetteLiqTip.setAttribute('visible', 'true');
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 400));
 
-            // 4. Nhấc lên cao
-            pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 1.5 ' + flaskPos.z + '; dur: 800');
+            // 4. Lift up
+            pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 1.2 ' + flaskPos.z + '; dur: 600');
+            await new Promise(r => setTimeout(r, 700));
+
+            // 5. Move to test tube
+            pipette.setAttribute('animation', 'property: position; to: 0 1.5 0; dur: 800');
             await new Promise(r => setTimeout(r, 900));
 
-            // 5. Di chuyển đến miệng ống nghiệm
-            pipette.setAttribute('animation', 'property: position; to: 0 1.6 0; dur: 1000');
-            await new Promise(r => setTimeout(r, 1100));
-
-            // 6. Nhỏ giọt
+            // 6. Dispense drop (Oval animation)
             drop.setAttribute('color', color);
             drop.setAttribute('visible', 'true');
-            drop.setAttribute('position', '0 0.9 0');
-            drop.setAttribute('animation', 'property: position; to: 0 0.4 0; dur: 700; easing: easeInQuad');
+            drop.setAttribute('position', '0 1.0 0');
+            drop.setAttribute('animation', 'property: position; to: 0 0.4 0; dur: 600; easing: easeInQuad');
             
-            // Chất lỏng trong pipette biến mất (đã nhỏ ra)
             pipetteLiqBody.setAttribute('visible', 'false');
             pipetteLiqTip.setAttribute('visible', 'false');
 
-            await new Promise(r => setTimeout(r, 750));
+            await new Promise(r => setTimeout(r, 650));
             drop.setAttribute('visible', 'false');
             
-            // 7. Di chuyển pipette về vị trí chờ
-            pipette.setAttribute('animation', 'property: position; to: 0 2.5 0; dur: 800');
-            setTimeout(() => pipette.setAttribute('visible', 'false'), 800);
+            // 7. Reset pipette position
+            pipette.setAttribute('animation', 'property: position; to: 0 2.0 0; dur: 600');
+            setTimeout(() => pipette.setAttribute('visible', 'false'), 650);
 
-            // Cập nhật chất lỏng trong ống nghiệm
+            // Update liquid level in test tube
             liquid.setAttribute('visible', 'true');
             liquidBottom.setAttribute('visible', 'true');
-            liquidBottom.setAttribute('material', 'opacity', 0.8);
-            liquid.setAttribute('material', 'opacity', 0.8);
+            liquidBottom.setAttribute('material', 'opacity', 0.9);
+            liquid.setAttribute('material', 'opacity', 0.9);
             
-            liquid.setAttribute('animation__height', { property: 'height', to: targetHeight, dur: 1200 });
-            liquid.setAttribute('animation__pos', { property: 'position', to: targetPos, dur: 1200 });
-            await new Promise(r => setTimeout(r, 1300));
+            liquid.setAttribute('animation__height', { property: 'height', to: targetHeight, dur: 1000 });
+            liquid.setAttribute('animation__pos', { property: 'position', to: targetPos, dur: 1000 });
+            await new Promise(r => setTimeout(r, 1100));
         }
 
         btnGl.addEventListener('click', async () => {
             btnGl.disabled = true;
-            instruction.innerText = "Đang hút dung dịch Glucose...";
-            await runPipetteSequence({x: -0.8, y: 0.6, z: 0}, "#ffffff", 0.3, "0 0.25 0");
+            instruction.innerText = "Adding Glucose...";
+            await runPipetteSequence({x: -0.5, y: 0.4, z: -0.4}, "#ffffff", 0.3, "0 0.25 0");
             
             liquid.setAttribute('material', 'color', '#ffffff');
             liquidBottom.setAttribute('material', 'color', '#ffffff');
-            statusText.innerText = "Đã thêm Glucose vào ống nghiệm.";
-            instruction.innerText = "Bước 2: Lấy dung dịch NaOH";
+            statusText.innerText = "Glucose added.";
+            instruction.innerText = "Step 2: Add NaOH solution";
             btnNa.disabled = false;
         });
 
         btnNa.addEventListener('click', async () => {
             btnNa.disabled = true;
-            instruction.innerText = "Đang hút dung dịch NaOH...";
-            await runPipetteSequence({x: 0, y: 0.6, z: 0.5}, "#f0f0f0", 0.5, "0 0.35 0");
+            instruction.innerText = "Adding NaOH...";
+            await runPipetteSequence({x: 0, y: 0.4, z: -0.4}, "#f0f0f0", 0.5, "0 0.35 0");
             
             liquid.setAttribute('material', 'color', '#f0f0f0');
             liquidBottom.setAttribute('material', 'color', '#f0f0f0');
-            statusText.innerText = "Đã thêm NaOH. Hỗn hợp chưa đổi màu.";
-            instruction.innerText = "Bước 3: Thêm CuSO4 đậm đặc";
+            statusText.innerText = "NaOH added. Mixture remains clear.";
+            instruction.innerText = "Step 3: Add concentrated CuSO4";
             btnCu.disabled = false;
         });
 
         btnCu.addEventListener('click', async () => {
             btnCu.disabled = true;
-            instruction.innerText = "Đang hút dung dịch CuSO4...";
-            await runPipetteSequence({x: 0.8, y: 0.6, z: 0}, "#0000ff", 0.7, "0 0.45 0");
+            instruction.innerText = "Adding CuSO4...";
+            await runPipetteSequence({x: 0.5, y: 0.4, z: -0.4}, "#0000ff", 0.7, "0 0.45 0");
             
-            statusText.innerText = "Hiện tượng: Phản ứng tạo phức đồng-glucose!";
+            statusText.innerText = "Reaction: Forming Dark Blue Copper-Glucose complex!";
             
-            const darkBlue = "#00008b";
-            const skyBlue = "#42a5f5";
+            const darkBlue = "#00008b"; // Deep Blue
+            const skyBlue = "#1e90ff"; // Transition blue
 
+            // Rich color transition
             liquid.setAttribute('animation__color', {
                 property: 'material.color',
                 type: 'color',
                 from: skyBlue,
                 to: darkBlue,
-                dur: 2000
+                dur: 1500
             });
             liquidBottom.setAttribute('animation__color', {
                 property: 'material.color',
                 type: 'color',
                 from: skyBlue,
                 to: darkBlue,
-                dur: 2000
+                dur: 1500
             });
             
-            await new Promise(r => setTimeout(r, 2100));
-            instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Dung dịch xanh lam thẫm trong suốt đặc trưng.<br>Chứng minh Glucose hòa tan kết tủa đồng (II) hydroxide.";
+            await new Promise(r => setTimeout(r, 1600));
+            instruction.innerText = "Experiment Completed!";
+            statusText.innerHTML = "Result: Transparent Dark Blue solution.<br>Glucose dissolves Cu(OH)2 to form a complex.";
         });
     </script>
 </body>
