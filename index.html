@@ -1,145 +1,103 @@
+
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="utf-8">
-<title>AR Thí nghiệm hồ tinh bột + iodine</title>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Mô phỏng 3D môn Hóa học cấp THPT</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+  </head>
+  <body>
+    <div id="unity-container" style="width: 100%; height: 100%;">
+      <canvas id="unity-canvas" width=auto height=auto></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+    </div>
+    <script>
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
 
-<!-- A-Frame & AR.js -->
-<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
 
-<style>
-body { margin:0; overflow:hidden; font-family: Arial; }
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/WebGL Builds.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/WebGL Builds.data",
+        frameworkUrl: buildUrl + "/WebGL Builds.framework.js",
+        codeUrl: buildUrl + "/WebGL Builds.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "HoaHocWebGL",
+        productVersion: "0.1",
+        showBanner: unityShowBanner,
+      };
 
-#note {
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,0.9);
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 16px;
-  z-index: 999;
-}
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
 
-#control {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  z-index: 999;
-}
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        container.className = "unity-mobile";
+        // Avoid draining fillrate performance on mobile devices,
+        // and default/override low DPI mode on mobile browsers.
+        config.devicePixelRatio = 1;
+        unityShowBanner('WebGL builds are not supported on mobile devices.');
+      } else {
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+      }
+      loadingBar.style.display = "block";
 
-button {
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-  color: white;
-  background-color: #3f51b5;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #bdbdbd;
-  cursor: not-allowed;
-}
-</style>
-</head>
-
-<body>
-
-<div id="note">Bước 1: Rót dung dịch hồ tinh bột 1% vào ống nghiệm</div>
-
-<div id="control">
-  <button id="b1">B1: Chuẩn bị hồ tinh bột</button>
-  <button id="b2" disabled>B2: Nhỏ dung dịch iodine</button>
-  <button id="b3" disabled>B3: Nhúng nước nóng</button>
-  <button id="b4" disabled>B4: Nhúng nước lạnh</button>
-</div>
-
-<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-  <a-marker preset="hiro">
-
-    <!-- Ống nghiệm nổi -->
-    <a-cylinder id="tube" position="0 1 0" radius="0.18" height="1.2"
-                color="#cccccc" opacity="0.25"></a-cylinder>
-
-    <!-- Dung dịch -->
-    <a-cylinder id="liquid" position="0 1 0" radius="0.16" height="0.6"
-                color="white" opacity="0.9"></a-cylinder>
-
-    <!-- Ống hút nhỏ giọt -->
-    <a-cylinder id="dropper" position="0.35 1.5 0" radius="0.03" height="0.3"
-                color="#ff5722" opacity="0.8"></a-cylinder>
-
-    <!-- Nhãn -->
-    <a-text id="label" value=""
-            position="-1.2 2 0"
-            scale="0.6 0.6 0.6"
-            color="black"></a-text>
-
-  </a-marker>
-
-  <a-entity camera></a-entity>
-</a-scene>
-
-<script>
-const liquid = document.getElementById("liquid");
-const dropper = document.getElementById("dropper");
-const label = document.getElementById("label");
-const note = document.getElementById("note");
-
-const b1 = document.getElementById("b1");
-const b2 = document.getElementById("b2");
-const b3 = document.getElementById("b3");
-const b4 = document.getElementById("b4");
-
-// B1: Chuẩn bị hồ tinh bột
-b1.addEventListener('touchstart', () => {
-  liquid.setAttribute("color","white");          // hồ tinh bột
-  label.setAttribute("value","Dung dịch hồ tinh bột 1%");
-  note.innerText = "Bước 2: Nhỏ dung dịch iodine vào ống nghiệm";
-  b2.disabled = false;
-  b1.disabled = true;
-});
-b1.addEventListener('click', b1.ontouchstart);
-
-// B2: Nhỏ dung dịch iodine
-b2.addEventListener('touchstart', () => {
-  dropper.setAttribute("position","0.35 1.2 0"); // ống hút hạ xuống
-  liquid.setAttribute("color","#2e1a47");        // xanh tím
-  label.setAttribute("value","Dung dịch hồ tinh bột + iodine → xanh tím");
-  note.innerText = "Bước 3: Nhúng nước nóng → mất màu";
-  b3.disabled = false;
-  b2.disabled = true;
-});
-b2.addEventListener('click', b2.ontouchstart);
-
-// B3: Nhúng nước nóng
-b3.addEventListener('touchstart', () => {
-  liquid.setAttribute("color","white");          // mất màu
-  label.setAttribute("value","Nhúng nước nóng → màu biến mất");
-  note.innerText = "Bước 4: Nhúng nước lạnh → màu xanh tím tái hiện";
-  b4.disabled = false;
-  b3.disabled = true;
-});
-b3.addEventListener('click', b3.ontouchstart);
-
-// B4: Nhúng nước lạnh
-b4.addEventListener('touchstart', () => {
-  liquid.setAttribute("color","#2e1a47");        // xanh tím quay lại
-  label.setAttribute("value","Nhúng nước lạnh → màu xanh tím tái hiện");
-  note.innerText = "Hoàn thành thí nghiệm";
-  dropper.setAttribute("position","0.35 1.5 0"); // ống hút trở lại
-  b4.disabled = true;
-});
-b4.addEventListener('click', b4.ontouchstart);
-</script>
-
-</body>
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          // alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
 </html>
