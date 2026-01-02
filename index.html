@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Phòng Thí Nghiệm Ảo AR - Tối Giản</title>
+    <title>Phòng Thí Nghiệm Ảo AR - 5 Giai Đoạn</title>
     <!-- Import A-Frame và AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
@@ -20,35 +20,37 @@
             pointer-events: none;
         }
         .control-panel {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             padding: 15px 25px;
             border-radius: 20px;
             display: inline-block;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             pointer-events: auto;
             border: 1px solid rgba(255,255,255,0.5);
             backdrop-filter: blur(10px);
             color: #333;
+            min-width: 280px;
         }
         h3 { margin: 0 0 5px 0; font-size: 16px; color: #1a237e; text-transform: uppercase; letter-spacing: 1px; }
+        .step-indicator { font-size: 12px; color: #666; margin-bottom: 10px; }
         button {
             background: linear-gradient(135deg, #1a237e, #3949ab);
             color: white; border: none; padding: 12px 24px; border-radius: 30px;
-            font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
             box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 35, 126, 0.4); }
-        #status-text { color: #d81b60; font-size: 13px; font-weight: 500; }
+        button:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        #status-text { color: #d81b60; font-size: 13px; font-weight: 500; margin-top: 8px; }
     </style>
 </head>
 <body style="margin: 0px; overflow: hidden;">
 
     <div id="ui-layer">
         <div class="control-panel">
-            <h3>Lab Thực Hành Ảo Tối Giản</h3>
+            <h3>Chuỗi Thí Nghiệm 5 Giai Đoạn</h3>
+            <div class="step-indicator" id="step-info">Giai đoạn: 1/5</div>
+            <button id="action-btn" onclick="nextStep()">Bắt đầu Giai đoạn 1</button>
             <p id="status-text">Đang sẵn sàng...</p>
-            <button id="action-btn" onclick="startReaction()">Tiến hành thí nghiệm</button>
-            <button id="reset-btn" onclick="location.reload()" style="display: none; background: #e53935;">Làm lại</button>
         </div>
     </div>
 
@@ -63,51 +65,43 @@
                 
                 <!-- KHÔNG GIAN PHÒNG TRỐNG (ENVIRONMENT) -->
                 <a-entity id="lab-space">
-                    <!-- Sàn lát gạch sạch sẽ -->
                     <a-plane width="10" height="10" rotation="-90 0 0" 
                         material="color: #ffffff; src: url(https://fany.savina.com/wp-content/uploads/2021/05/tile-texture.jpg); repeat: 8 8; roughness: 0.5"></a-plane>
                     
-                    <!-- Các bức tường bao quanh (Chỉ tạo tường trắng, không đồ vật) -->
                     <a-box position="0 2.5 -5" width="10" height="5" depth="0.1" mixin="wall-mat"></a-box>
                     <a-box position="-5 2.5 0" width="0.1" height="5" depth="10" mixin="wall-mat"></a-box>
                     <a-box position="5 2.5 0" width="0.1" height="5" depth="10" mixin="wall-mat"></a-box>
                 </a-entity>
 
-                <!-- VẬT THỂ THÍ NGHIỆM LƠ LỬNG TRÊN NỀN GẠCH -->
+                <!-- VẬT THỂ THÍ NGHIỆM LƠ LỬNG -->
                 <a-entity id="experiment-group" position="0 1.2 0">
                     
-                    <!-- Ống nghiệm lơ lửng -->
+                    <!-- Ống nghiệm -->
                     <a-entity id="test-tube">
                         <a-cylinder height="4" radius="0.4" material="color: #ffffff; opacity: 0.15; transparent: true; metalness: 1; roughness: 0; side: double"></a-cylinder>
                         <a-sphere position="0 -2 0" radius="0.4" theta-length="90" rotation="180 0 0" material="color: #ffffff; opacity: 0.15; transparent: true"></a-sphere>
                         
-                        <!-- Chất lỏng hồ tinh bột -->
-                        <a-entity id="starch-liquid">
+                        <!-- Dung dịch trong ống nghiệm -->
+                        <a-entity id="liquid-entity">
                             <a-cylinder id="liquid" height="1.5" radius="0.38" position="0 -1.25 0" material="color: #ffffff; opacity: 0.8; transparent: true"></a-cylinder>
                             <a-circle id="liquid-surface" radius="0.38" position="0 -0.5 0" rotation="-90 0 0" material="color: #ffffff; opacity: 0.9"></a-circle>
                         </a-entity>
                         
-                        <!-- Nhãn chữ lơ lửng -->
-                        <a-text value="Hồ Tinh Bột" align="center" position="0 -2.6 0" rotation="0 0 0" color="#333" width="5"></a-text>
+                        <a-text id="tube-label" value="Mẫu Thử" align="center" position="0 -2.6 0" color="#333" width="5"></a-text>
                     </a-entity>
 
-                    <!-- PIPETTE NHỎ GỌN VÀ TINH TẾ -->
+                    <!-- PIPETTE NHỎ GỌN -->
                     <a-entity id="dropper" position="1.5 2.5 0.5" rotation="0 0 -25">
-                        <!-- Bầu bóp cao su nhỏ -->
                         <a-sphere radius="0.15" scale="1 1.4 1" position="0 1 0" material="color: #212121"></a-sphere>
-                        <!-- Thân thủy tinh mảnh mai -->
                         <a-cylinder height="2.2" radius="0.035" position="0 -0.2 0" material="color: #ffffff; opacity: 0.2; transparent: true"></a-cylinder>
-                        <!-- Dung dịch Iodine đỏ nâu bên trong -->
-                        <a-cylinder height="0.8" radius="0.02" position="0 -0.6 0" material="color: #8b4513; opacity: 0.9"></a-cylinder>
-                        <!-- Đầu nhọn tinh tế -->
+                        <a-cylinder id="dropper-liquid" height="0.8" radius="0.02" position="0 -0.6 0" material="color: #8b4513; opacity: 0.9"></a-cylinder>
                         <a-cone height="0.3" radius-bottom="0.035" radius-top="0.005" position="0 -1.45 0" material="color: #ffffff; opacity: 0.2; transparent: true"></a-cone>
                     </a-entity>
 
-                    <!-- Giọt thuốc thử khi rơi -->
-                    <a-sphere id="iodine-drop" radius="0.04" material="color: #8b4513" visible="false"></a-sphere>
+                    <!-- Giọt thuốc thử -->
+                    <a-sphere id="drop" radius="0.04" material="color: #8b4513" visible="false"></a-sphere>
                 </a-entity>
 
-                <!-- Chiếu sáng cho không gian sạch -->
                 <a-entity light="type: ambient; intensity: 0.7"></a-entity>
                 <a-entity light="type: directional; intensity: 0.6" position="2 4 1"></a-entity>
             </a-entity>
@@ -120,12 +114,55 @@
         const marker = document.querySelector('#hiro-marker');
         const rig = document.querySelector('#main-rig');
         const statusText = document.querySelector('#status-text');
+        const stepInfo = document.querySelector('#step-info');
+        const actionBtn = document.querySelector('#action-btn');
+        
         const liquid = document.querySelector('#liquid');
         const liquidSurface = document.querySelector('#liquid-surface');
         const dropper = document.querySelector('#dropper');
-        const iodineDrop = document.querySelector('#iodine-drop');
+        const dropperLiquid = document.querySelector('#dropper-liquid');
+        const drop = document.querySelector('#drop');
+        const tubeLabel = document.querySelector('#tube-label');
 
-        // Giữ thí nghiệm luôn thẳng đứng trên nền gạch
+        let currentStep = 0;
+        const steps = [
+            { 
+                label: "Hồ tinh bột", 
+                reagentColor: "#8b4513", // Iodine
+                resultColor: "#1a237e",  // Xanh tím
+                msg: "Nhỏ Iodine vào Hồ tinh bột...",
+                res: "Kết quả: Phức màu Xanh Tím đặc trưng."
+            },
+            { 
+                label: "Dịch Chanh (Acid)", 
+                reagentColor: "#e91e63", // Quỳ tím đỏ
+                resultColor: "#ff80ab",  // Hồng nhạt
+                msg: "Thử Acid bằng chỉ thị màu...",
+                res: "Kết quả: Dung dịch chuyển hồng (Acid)."
+            },
+            { 
+                label: "Nước vôi trong", 
+                reagentColor: "#ffffff", // CO2 giả lập
+                resultColor: "#e0e0e0",  // Vẩn đục
+                msg: "Sục khí vào Nước vôi trong...",
+                res: "Kết quả: Xuất hiện vẩn đục trắng (CaCO3)."
+            },
+            { 
+                label: "CuSO4", 
+                reagentColor: "#ffffff", // NaOH
+                resultColor: "#00bcd4",  // Kết tủa xanh lam
+                msg: "Cho kiềm vào muối Đồng...",
+                res: "Kết quả: Kết tủa Xanh Lam xuất hiện."
+            },
+            { 
+                label: "Chất chỉ thị", 
+                reagentColor: "#4caf50", // Kiềm mạnh
+                resultColor: "#2e7d32",  // Xanh lục đậm
+                msg: "Kiểm tra độ pH của Bazơ mạnh...",
+                res: "Kết quả: Màu xanh lục (Bazơ)."
+            }
+        ];
+
         function syncLab() {
             if (marker.object3D.visible) {
                 const rot = marker.object3D.rotation;
@@ -136,34 +173,62 @@
         }
         syncLab();
 
-        function startReaction() {
-            document.querySelector('#action-btn').disabled = true;
-            statusText.textContent = "Đang nhỏ thuốc thử Iodine...";
+        async function nextStep() {
+            if (currentStep >= steps.length) {
+                location.reload();
+                return;
+            }
 
-            // Pipette di chuyển nhẹ nhàng
-            dropper.setAttribute('animation', { property: 'position', to: '0 3.2 0', dur: 1200, easing: 'easeInOutQuad' });
-            dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 0', dur: 1000 });
+            const step = steps[currentStep];
+            actionBtn.disabled = true;
+            statusText.textContent = step.msg;
+            
+            // 1. Reset trạng thái ống nghiệm cho bước mới
+            tubeLabel.setAttribute('value', step.label);
+            dropperLiquid.setAttribute('material', 'color', step.reagentColor);
+            drop.setAttribute('material', 'color', step.reagentColor);
 
-            setTimeout(() => {
-                iodineDrop.setAttribute('visible', 'true');
-                iodineDrop.setAttribute('position', '0 1.8 0');
-                iodineDrop.setAttribute('animation', { property: 'position', to: '0 0.8 0', dur: 700, easing: 'easeInQuad' });
+            // 2. Di chuyển Pipette
+            dropper.setAttribute('animation', { property: 'position', to: '0 3.2 0', dur: 1000, easing: 'easeInOutQuad' });
+            dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 0', dur: 800 });
+            
+            await new Promise(r => setTimeout(r, 1200));
 
-                setTimeout(() => {
-                    iodineDrop.setAttribute('visible', 'false');
-                    statusText.textContent = "Phản ứng: Xuất hiện phức màu Xanh Tím!";
-                    
-                    const starchBlue = "#1a237e";
-                    liquid.setAttribute('animation', { property: 'material.color', to: starchBlue, dur: 2000 });
-                    liquidSurface.setAttribute('animation', { property: 'material.color', to: starchBlue, dur: 2000 });
+            // 3. Hiệu ứng giọt rơi
+            drop.setAttribute('visible', 'true');
+            drop.setAttribute('position', '0 1.8 0');
+            drop.setAttribute('animation', { property: 'position', to: '0 0.8 0', dur: 600, easing: 'easeInQuad' });
 
-                    document.querySelector('#action-btn').style.display = 'none';
-                    document.querySelector('#reset-btn').style.display = 'inline-block';
-                }, 750);
-            }, 1500);
+            await new Promise(r => setTimeout(r, 650));
+            drop.setAttribute('visible', 'false');
+
+            // 4. Biến đổi màu sắc
+            liquid.setAttribute('animation', { property: 'material.color', to: step.resultColor, dur: 1500 });
+            liquidSurface.setAttribute('animation', { property: 'material.color', to: step.resultColor, dur: 1500 });
+
+            await new Promise(r => setTimeout(r, 1500));
+            
+            // 5. Kết thúc bước
+            statusText.textContent = step.res;
+            currentStep++;
+            
+            if (currentStep < steps.length) {
+                stepInfo.textContent = `Giai đoạn: ${currentStep + 1}/5`;
+                actionBtn.textContent = `Tiếp tục Giai đoạn ${currentStep + 1}`;
+                actionBtn.disabled = false;
+                
+                // Đưa pipette về vị trí chờ
+                dropper.setAttribute('animation', { property: 'position', to: '1.5 2.5 0.5', dur: 800 });
+                dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 -25', dur: 800 });
+            } else {
+                stepInfo.textContent = "Hoàn thành chuỗi thí nghiệm!";
+                actionBtn.textContent = "Làm lại từ đầu";
+                actionBtn.disabled = false;
+                actionBtn.style.background = "#e53935";
+            }
         }
 
-        marker.addEventListener('markerFound', () => { statusText.textContent = "Hệ thống sẵn sàng!"; });
+        marker.addEventListener('markerFound', () => { statusText.textContent = "Hệ thống sẵn sàng cho 5 thí nghiệm!"; });
     </script>
 </body>
 </html>
