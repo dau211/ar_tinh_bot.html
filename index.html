@@ -27,51 +27,59 @@
         }
 
         .control-panel {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
             border-radius: 15px;
             display: inline-block;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             pointer-events: auto;
             max-width: 90%;
+            border: 1px solid #ddd;
         }
 
         h3 {
             margin: 0 0 10px 0;
             color: #2c3e50;
-            font-size: 16px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         p {
             margin: 5px 0;
-            font-size: 14px;
+            font-size: 15px;
             color: #555;
+            line-height: 1.4;
         }
 
         button {
-            background-color: #8e44ad;
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 25px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4);
         }
 
         button:active {
-            background-color: #6c3483;
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(142, 68, 173, 0.4);
         }
 
         button:disabled {
-            background-color: #ccc;
+            background: #bdc3c7;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
         #status-text {
             font-weight: bold;
-            color: #e67e22;
+            color: #d35400;
         }
     </style>
 </head>
@@ -84,47 +92,95 @@
             <p id="instruction">Hướng camera vào thẻ Hiro để bắt đầu.</p>
             <p>Trạng thái: <span id="status-text">Đang chuẩn bị...</span></p>
             <button id="action-btn" onclick="startReaction()">Nhỏ dung dịch Iodine</button>
-            <button id="reset-btn" onclick="resetExperiment()" style="background-color: #95a5a6; display: none;">Làm lại</button>
+            <button id="reset-btn" onclick="resetExperiment()" style="background: linear-gradient(135deg, #7f8c8d, #95a5a6); display: none;">Làm lại</button>
         </div>
     </div>
 
     <!-- AR Scene -->
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
+    <!-- Thêm renderer="antialias: true; colorManagement: true;" để hình ảnh mượt và màu chuẩn hơn -->
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;">
         
+        <!-- Hệ thống ánh sáng để tạo khối 3D (Quan trọng cho hiệu ứng thủy tinh) -->
+        <a-entity light="type: ambient; color: #BBB; intensity: 0.8"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 1.2; castShadow: true" position="-1 2 1"></a-entity>
+        <a-entity light="type: point; color: #FFF; intensity: 0.8; distance: 10" position="0 3 2"></a-entity>
+
         <!-- Định nghĩa Marker Hiro -->
         <a-marker preset="hiro">
             
             <!-- Nhóm chứa toàn bộ dụng cụ thí nghiệm -->
-            <a-entity scale="0.5 0.5 0.5" rotation="-90 0 0"> <!-- Xoay để đứng thẳng trên marker -->
+            <a-entity scale="0.6 0.6 0.6" rotation="-90 0 0"> <!-- Xoay để đứng thẳng trên marker -->
                 
-                <!-- 1. Ống nghiệm (Test Tube) -->
-                <a-entity position="0 0 0.5">
-                    <!-- Thân ống nghiệm (Thủy tinh trong suốt) -->
-                    <a-cylinder height="4" radius="0.8" color="white" opacity="0.3" position="0 2 0"></a-cylinder>
-                    <!-- Đáy ống nghiệm (Bán cầu) -->
-                    <a-sphere radius="0.8" color="white" opacity="0.3" position="0 0 0" theta-length="90" rotation="180 0 0"></a-sphere>
+                <!-- 1. GIÁ ĐỠ ỐNG NGHIỆM (Thêm vào để tăng tính thực tế) -->
+                <a-entity position="0 0 -0.5">
+                     <a-box position="0 0.2 0" depth="2" height="0.4" width="3" material="color: #8e44ad; roughness: 0.8; metalness: 0.2"></a-box> <!-- Đế -->
+                     <a-cylinder position="0 2 0" radius="0.9" height="4" material="color: #95a5a6; wireframe: true; opacity: 0.3"></a-cylinder> <!-- Khung giữ ảo -->
+                </a-entity>
+
+                <!-- 2. ỐNG NGHIỆM (Test Tube) - Sử dụng vật liệu Thủy tinh -->
+                <a-entity position="0 0.5 0">
+                    <!-- Thân ống nghiệm: transparent, metalness cao để bóng loáng -->
+                    <a-cylinder height="4.5" radius="0.8" position="0 2.25 0" 
+                        material="color: #ffffff; opacity: 0.3; transparent: true; metalness: 0.9; roughness: 0.1; side: double; depthWrite: false;">
+                    </a-cylinder>
+                    <!-- Đáy ống nghiệm -->
+                    <a-sphere radius="0.8" position="0 0 0" theta-length="90" rotation="180 0 0"
+                        material="color: #ffffff; opacity: 0.3; transparent: true; metalness: 0.9; roughness: 0.1; side: double; depthWrite: false;">
+                    </a-sphere>
+                    <!-- Vành miệng ống nghiệm -->
+                    <a-torus radius="0.8" radius-tubular="0.05" position="0 4.5 0" rotation="90 0 0"
+                        material="color: #ffffff; opacity: 0.4; transparent: true; metalness: 0.9; roughness: 0.1;">
+                    </a-torus>
                     
-                    <!-- Dung dịch bên trong (Hồ tinh bột 1%) -->
-                    <!-- Ban đầu màu trắng đục (#F5F5F5) -->
-                    <a-cylinder id="liquid" height="2" radius="0.75" color="#F5F5F5" position="0 1 0" opacity="0.9"></a-cylinder>
-                    <a-sphere id="liquid-bottom" radius="0.75" color="#F5F5F5" position="0 0 0" opacity="0.9" theta-length="90" rotation="180 0 0"></a-sphere>
+                    <!-- DUNG DỊCH (Hồ tinh bột 1%) - Bên trong ống nghiệm -->
+                    <a-entity id="liquid-container" position="0 0.1 0">
+                        <!-- Dung dịch hơi nhỏ hơn ống một chút để nằm lọt bên trong -->
+                        <a-cylinder id="liquid" height="2.5" radius="0.72" position="0 1.25 0"
+                            material="color: #F5F5F5; opacity: 0.9; transparent: true; metalness: 0.2; roughness: 0.3">
+                        </a-cylinder>
+                        <a-sphere id="liquid-bottom" radius="0.72" position="0 0 0" theta-length="90" rotation="180 0 0"
+                            material="color: #F5F5F5; opacity: 0.9; transparent: true; metalness: 0.2; roughness: 0.3">
+                        </a-sphere>
+                        <!-- Mặt thoáng chất lỏng -->
+                        <a-circle id="liquid-surface" radius="0.72" position="0 2.5 0" rotation="-90 0 0"
+                            material="color: #F5F5F5; opacity: 0.95; transparent: true; metalness: 0.3; roughness: 0.2">
+                        </a-circle>
+                    </a-entity>
                 </a-entity>
 
-                <!-- 2. Ống hút nhỏ giọt (Dropper) -->
-                <a-entity id="dropper" position="1.5 6 0.5" rotation="0 0 -20">
-                    <!-- Thân ống hút -->
-                    <a-cylinder height="2.5" radius="0.1" color="#bdc3c7" position="0 1.25 0"></a-cylinder>
-                    <!-- Đầu bóp cao su -->
-                    <a-sphere radius="0.3" color="#e74c3c" position="0 2.5 0"></a-sphere>
-                    <!-- Đầu nhỏ giọt -->
-                    <a-cone height="0.5" radius-bottom="0.1" radius-top="0" color="#bdc3c7" position="0 -0.25 0"></a-cone>
+                <!-- 3. ỐNG HÚT (Dropper) - Nâng cấp chất liệu -->
+                <a-entity id="dropper" position="2 6 0" rotation="0 0 -25">
+                    <!-- Thân ống hút (Thủy tinh) -->
+                    <a-cylinder height="2.8" radius="0.12" position="0 1.4 0"
+                        material="color: #dcdcdc; opacity: 0.4; transparent: true; metalness: 0.8; roughness: 0.1">
+                    </a-cylinder>
+                    
+                    <!-- Lõi ống hút (Giả lập chất lỏng bên trong ống hút) -->
+                    <a-cylinder height="1.5" radius="0.06" position="0 1 0"
+                        material="color: #5c3817; opacity: 0.8">
+                    </a-cylinder>
+
+                    <!-- Đầu bóp cao su (Màu đỏ, nhám - Matte) -->
+                    <a-sphere radius="0.35" position="0 2.8 0" scale="1 1.2 1"
+                        material="color: #c0392b; roughness: 0.9; metalness: 0.1">
+                    </a-sphere>
+                    
+                    <!-- Đầu nhỏ giọt (Thủy tinh vuốt nhọn) -->
+                    <a-cone height="0.6" radius-bottom="0.12" radius-top="0" position="0 -0.3 0"
+                        material="color: #dcdcdc; opacity: 0.4; transparent: true; metalness: 0.8; roughness: 0.1">
+                    </a-cone>
                 </a-entity>
 
-                <!-- 3. Giọt dung dịch Iodine (Ẩn ban đầu) -->
-                <a-sphere id="iodine-drop" radius="0.15" color="#5c3817" position="0.8 4.5 0.5" visible="false"></a-sphere>
+                <!-- 4. GIỌT IODINE (Bóng, lỏng) -->
+                <a-sphere id="iodine-drop" radius="0.12" position="1.1 4.5 0" visible="false"
+                    material="color: #5c3817; metalness: 0.6; roughness: 0.2; opacity: 0.9">
+                </a-sphere>
 
-                <!-- Nhãn tên hóa chất -->
-                <a-text value="Ho Tinh Bot" position="-2 1 0.5" color="black" scale="2 2 2" rotation="90 0 0"></a-text>
+                <!-- Nhãn tên hóa chất (Nổi bật hơn) -->
+                <a-entity position="-2 1 0" rotation="0 0 0">
+                    <a-plane width="2.5" height="0.8" color="#2c3e50" position="0 0 -0.1"></a-plane>
+                    <a-text value="Ho Tinh Bot" align="center" position="0 0 0" color="#ecf0f1" width="6"></a-text>
+                </a-entity>
             
             </a-entity>
         </a-marker>
@@ -137,6 +193,7 @@
         // Các biến tham chiếu DOM
         const liquid = document.querySelector('#liquid');
         const liquidBottom = document.querySelector('#liquid-bottom');
+        const liquidSurface = document.querySelector('#liquid-surface');
         const dropper = document.querySelector('#dropper');
         const iodineDrop = document.querySelector('#iodine-drop');
         const actionBtn = document.querySelector('#action-btn');
@@ -146,7 +203,7 @@
 
         // Màu sắc
         const COLOR_STARCH = "#F5F5F5"; // Màu trắng đục của hồ tinh bột
-        const COLOR_REACTION = "#4B0082"; // Màu xanh tím đậm (Indigo) của phản ứng Iodine-Tinh bột
+        const COLOR_REACTION = "#4B0082"; // Màu xanh tím đậm (Indigo)
 
         // Trạng thái ban đầu
         statusText.textContent = "Sẵn sàng. Ống nghiệm chứa 2ml hồ tinh bột 1%.";
@@ -154,63 +211,61 @@
         function startReaction() {
             actionBtn.disabled = true;
             statusText.textContent = "Đang nhỏ dung dịch Iodine...";
-            instruction.textContent = "Quan sát hiện tượng...";
+            instruction.textContent = "Quan sát màu sắc trong ống nghiệm...";
 
-            // 1. Di chuyển ống hút vào vị trí phía trên ống nghiệm
+            // 1. Di chuyển ống hút
             dropper.setAttribute('animation', {
                 property: 'position',
-                to: '0 5 0.5',
+                to: '0 5.5 0', // Cao hơn miệng ống nghiệm một chút
                 dur: 1000,
-                easing: 'easeInOutQuad'
+                easing: 'easeInOutCubic'
             });
             
             dropper.setAttribute('animation__rotate', {
                 property: 'rotation',
                 to: '0 0 0',
                 dur: 1000,
-                easing: 'easeInOutQuad'
+                easing: 'easeInOutCubic'
             });
 
-            // 2. Sau khi ống hút đến nơi, tạo hiệu ứng nhỏ giọt
+            // 2. Tạo hiệu ứng nhỏ giọt
             setTimeout(() => {
                 iodineDrop.setAttribute('visible', 'true');
-                iodineDrop.setAttribute('position', '0 4.5 0.5'); // Đặt lại vị trí xuất phát ở đầu ống hút
+                iodineDrop.setAttribute('position', '0 5.0 0'); // Xuất phát từ đầu ống hút
                 
                 // Rơi xuống
                 iodineDrop.setAttribute('animation', {
                     property: 'position',
-                    to: '0 2 0.5', // Rơi vào dung dịch
-                    dur: 800,
+                    to: '0 3.0 0', // Rơi chạm mặt thoáng
+                    dur: 600,
                     easing: 'easeInQuad'
                 });
 
-                // 3. Phản ứng đổi màu (Mô phỏng lắc nhẹ và đổi màu)
+                // 3. Phản ứng đổi màu
                 setTimeout(() => {
-                    iodineDrop.setAttribute('visible', 'false'); // Giọt biến mất khi chạm mặt nước
-                    statusText.textContent = "Dung dịch chuyển sang màu xanh tím!";
-                    instruction.textContent = "Hiện tượng: Iốt gặp tinh bột tạo màu xanh tím.";
+                    iodineDrop.setAttribute('visible', 'false'); // Biến mất khi chạm
+                    statusText.textContent = "Phản ứng xảy ra!";
+                    instruction.textContent = "Dung dịch chuyển màu Xanh Tím đặc trưng.";
                     
-                    // Đổi màu thân dung dịch
-                    liquid.setAttribute('animation', {
-                        property: 'color',
+                    // Cấu hình animation đổi màu
+                    const animConfig = {
+                        property: 'material.color',
                         to: COLOR_REACTION,
                         dur: 1500,
                         easing: 'linear'
-                    });
-                    
-                    // Đổi màu đáy dung dịch
-                    liquidBottom.setAttribute('animation', {
-                        property: 'color',
-                        to: COLOR_REACTION,
-                        dur: 1500,
-                        easing: 'linear'
-                    });
+                    };
+
+                    liquid.setAttribute('animation', animConfig);
+                    liquidBottom.setAttribute('animation', animConfig);
+                    liquidSurface.setAttribute('animation', animConfig);
 
                     // Hiển thị nút Reset
-                    actionBtn.style.display = 'none';
-                    resetBtn.style.display = 'inline-block';
+                    setTimeout(() => {
+                        actionBtn.style.display = 'none';
+                        resetBtn.style.display = 'inline-block';
+                    }, 1500);
 
-                }, 800);
+                }, 600);
 
             }, 1200);
         }
@@ -224,17 +279,20 @@
             instruction.textContent = "Bấm nút để bắt đầu lại.";
 
             // Reset 3D Objects
-            // Màu về trắng
-            liquid.setAttribute('color', COLOR_STARCH);
-            liquidBottom.setAttribute('color', COLOR_STARCH);
+            // Reset màu sắc (dùng setAttribute cho material.color thay vì color attribute trực tiếp)
+            liquid.setAttribute('material', 'color', COLOR_STARCH);
+            liquidBottom.setAttribute('material', 'color', COLOR_STARCH);
+            liquidSurface.setAttribute('material', 'color', COLOR_STARCH);
+            
             liquid.removeAttribute('animation');
             liquidBottom.removeAttribute('animation');
+            liquidSurface.removeAttribute('animation');
 
             // Ống hút về vị trí cũ
             dropper.removeAttribute('animation');
             dropper.removeAttribute('animation__rotate');
-            dropper.setAttribute('position', '1.5 6 0.5');
-            dropper.setAttribute('rotation', '0 0 -20');
+            dropper.setAttribute('position', '2 6 0');
+            dropper.setAttribute('rotation', '0 0 -25');
 
             // Giọt nước ẩn đi
             iodineDrop.setAttribute('visible', 'false');
