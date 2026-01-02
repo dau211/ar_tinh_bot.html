@@ -110,23 +110,20 @@
                 gesture-handler="minScale: 0.5; maxScale: 3">
                 
                 <a-entity id="lab-equipment">
-                    <!-- TRÌNH TỰ HÀNG NGANG: Starch | Cold | [Tube Area] | Hot | Iodine -->
-                    
                     <!-- Giá đỡ ống nghiệm: Đặt tại 0 0 0 để che mặt chữ Hiro -->
                     <a-box position="0 0.025 0" width="0.4" height="0.05" depth="0.4" color="#333"></a-box>
 
-                    <!-- 1. Lọ đựng Starch (Đáy tại y=0) -->
+                    <!-- 1. Lọ đựng Starch -->
                     <a-entity position="-1.0 0 0" id="flask-starch">
                         <a-cone radius-bottom="0.15" radius-top="0.05" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5"></a-cone>
                         <a-cylinder radius="0.05" height="0.1" position="0 0.35 0" material="shader: flat; color: #f5f5f5"></a-cylinder>
                         <a-text value="Starch" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 2. Cốc nước Lạnh (Ca thủy tinh to, đáy tại y=0) -->
+                    <!-- 2. Cốc nước Lạnh -->
                     <a-entity id="beaker-cold" position="-0.5 0 0">
                         <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1" open-ended="true" position="0 0.25 0"></a-cylinder>
                         <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.2; transparent: true; side: double"></a-circle>
-                        <!-- Mực nước lạnh (không tô màu mặt thoáng phía trên) -->
                         <a-cylinder radius="0.21" height="0.4" position="0 0.2 0" material="color: #00e5ff; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
                         <a-text value="Nuoc Lanh" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
@@ -140,16 +137,15 @@
                         <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.118" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-sphere>
                     </a-entity>
 
-                    <!-- 3. Cốc nước Nóng (Ca thủy tinh to, đáy tại y=0) -->
+                    <!-- 3. Cốc nước Nóng -->
                     <a-entity id="beaker-hot" position="0.5 0 0">
                         <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1" open-ended="true" position="0 0.25 0"></a-cylinder>
                         <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.2; transparent: true; side: double"></a-circle>
-                        <!-- Mực nước nóng (không tô màu mặt thoáng phía trên) -->
                         <a-cylinder radius="0.21" height="0.4" position="0 0.2 0" material="color: #ff4500; opacity: 0.3; transparent: true" open-ended="true"></a-cylinder>
                         <a-text value="Nuoc Nong" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 4. Lọ đựng Iodine (Đáy tại y=0) -->
+                    <!-- 4. Lọ đựng Iodine -->
                     <a-entity position="1.0 0 0" id="flask-iodine">
                         <a-cone radius-bottom="0.15" radius-top="0.05" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5"></a-cone>
                         <a-cylinder radius="0.05" height="0.1" position="0 0.35 0" material="shader: flat; color: #f5f5f5"></a-cylinder>
@@ -282,20 +278,50 @@
             btnHot.disabled = false;
         });
 
+        // Hàm hỗ trợ nhúng ống nghiệm (Di chuyển ngang phía trên -> Nhúng xuống -> Nhấc lên -> Về vị trí cũ)
+        async function dipTubeIntoBeaker(targetX, targetY) {
+            // 1. Nhấc ống nghiệm lên cao
+            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 1.0 0; dur: 800; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 900));
+
+            // 2. Di chuyển ngang đến phía trên cốc mục tiêu
+            movingTubeAssembly.setAttribute('animation', `property: position; to: ${targetX} 1.0 0; dur: 1000; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 1100));
+
+            // 3. Nhúng xuống cốc nước
+            movingTubeAssembly.setAttribute('animation', `property: position; to: ${targetX} ${targetY} 0; dur: 1200; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 1300));
+        }
+
+        async function liftAndReturnTube() {
+            const currentPos = movingTubeAssembly.getAttribute('position');
+            // 1. Nhấc ống nghiệm lên khỏi cốc
+            movingTubeAssembly.setAttribute('animation', `property: position; to: ${currentPos.x} 1.0 0; dur: 1000; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 1100));
+
+            // 2. Di chuyển về phía trên giá đỡ
+            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 1.0 0; dur: 1000; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 1100));
+
+            // 3. Đặt xuống giá đỡ
+            movingTubeAssembly.setAttribute('animation', `property: position; to: 0 0.5 0; dur: 800; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 900));
+        }
+
         btnHot.addEventListener('click', async () => {
             btnHot.disabled = true;
-            instruction.innerText = "Đang nhúng ống nghiệm...";
-            movingTubeAssembly.setAttribute('animation', 'property: position; to: 0.5 0.1 0; dur: 1500; easing: easeInOutQuad');
-            await new Promise(r => setTimeout(r, 1600));
+            instruction.innerText = "Đang nhúng ống nghiệm vào nước nóng...";
             
+            await dipTubeIntoBeaker(0.5, 0.1);
+            
+            // Hiệu ứng mất màu
             liquid.setAttribute('animation__fade', { property: 'material.color', to: COLOR_STARCH, dur: 2000 });
             liquidBottom.setAttribute('animation__fade', { property: 'material.color', to: COLOR_STARCH, dur: 2000 });
             
             statusText.innerText = "Nhiệt độ cao làm Iodine giải phóng khỏi mạch xoắn tinh bột.";
             await new Promise(r => setTimeout(r, 2200));
             
-            movingTubeAssembly.setAttribute('animation', 'property: position; to: 0 0.5 0; dur: 1200; easing: easeInOutQuad');
-            await new Promise(r => setTimeout(r, 1300));
+            await liftAndReturnTube();
             
             instruction.innerText = "Bước 4: Nhúng ống nghiệm vào nước lạnh";
             btnCold.disabled = false;
@@ -303,18 +329,18 @@
 
         btnCold.addEventListener('click', async () => {
             btnCold.disabled = true;
-            instruction.innerText = "Đang nhúng ống nghiệm...";
-            movingTubeAssembly.setAttribute('animation', 'property: position; to: -0.5 0.1 0; dur: 1500; easing: easeInOutQuad');
-            await new Promise(r => setTimeout(r, 1600));
+            instruction.innerText = "Đang nhúng ống nghiệm vào nước lạnh...";
             
+            await dipTubeIntoBeaker(-0.5, 0.1);
+            
+            // Hiệu ứng hiện màu lại
             liquid.setAttribute('animation__recolor', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 2000 });
             liquidBottom.setAttribute('animation__recolor', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 2000 });
             
             statusText.innerText = "Khi nguội, Iodine bị giữ lại trong mạch xoắn, màu xanh tím hiện lại.";
             await new Promise(r => setTimeout(r, 2200));
             
-            movingTubeAssembly.setAttribute('animation', 'property: position; to: 0 0.5 0; dur: 1200; easing: easeInOutQuad');
-            await new Promise(r => setTimeout(r, 1300));
+            await liftAndReturnTube();
             
             instruction.innerText = "Thí nghiệm hoàn tất!";
             statusText.innerHTML = "Phân tích: Phản ứng này dùng để nhận biết tinh bột.<br>Sự thay đổi màu sắc phụ thuộc vào trạng thái cấu trúc xoắn của amylose.";
