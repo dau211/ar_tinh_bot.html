@@ -55,7 +55,7 @@
         
         <a-assets>
             <!-- Texture giả lập mặt bàn đá và tường -->
-            <a-mixin id="wall-mat" material="color: #f0f0f0; roughness: 1; metalness: 0"></a-mixin>
+            <a-mixin id="wall-mat" material="color: #e3f2fd; roughness: 0.8; metalness: 0.1"></a-mixin>
             <a-mixin id="table-mat" material="color: #2c3e50; roughness: 0.3; metalness: 0.5"></a-mixin>
         </a-assets>
 
@@ -64,31 +64,41 @@
                 
                 <!-- CẤU TRÚC PHÒNG THỰC HÀNH (VIRTUAL ENVIRONMENT) -->
                 <a-entity id="lab-environment">
-                    <!-- Sàn phòng lab ngay trên marker -->
+                    <!-- Sàn phòng lab -->
                     <a-plane width="10" height="10" rotation="-90 0 0" material="color: #bdc3c7; src: url(https://fany.savina.com/wp-content/uploads/2021/05/tile-texture.jpg); repeat: 5 5"></a-plane>
                     
+                    <!-- HỆ THỐNG TƯỜNG XUNG QUANH -->
+                    <!-- Tường sau -->
+                    <a-box position="0 2.5 -5" width="10" height="5" depth="0.2" mixin="wall-mat"></a-box>
+                    <!-- Tường trái -->
+                    <a-box position="-5 2.5 0" width="0.2" height="5" depth="10" mixin="wall-mat"></a-box>
+                    <!-- Tường phải -->
+                    <a-box position="5 2.5 0" width="0.2" height="5" depth="10" mixin="wall-mat"></a-box>
+                    
+                    <!-- Trang trí tường sau (Cửa sổ hoặc bảng tên phòng lab) -->
+                    <a-plane position="0 3 -4.85" width="4" height="2" color="#cfd8dc" material="opacity: 0.5; transparent: true"></a-plane>
+                    <a-text value="BIOLOGY & CHEMISTRY LAB" align="center" position="0 3.5 -4.8" color="#455a64" width="6"></a-text>
+
                     <!-- Bàn thí nghiệm chính -->
                     <a-box position="0 0.75 0" width="4" height="1.5" depth="2" mixin="table-mat">
-                        <!-- Viền nhôm mặt bàn -->
                         <a-box position="0 0.75 0" width="4.1" height="0.1" depth="2.1" material="color: #95a5a6; metalness: 0.8"></a-box>
                     </a-box>
 
-                    <!-- Tường sau và giá kệ -->
-                    <a-entity position="0 0 -1">
-                        <a-box position="0 2 0" width="4" height="4" depth="0.1" mixin="wall-mat"></a-box>
-                        <!-- Kệ để hóa chất -->
-                        <a-box position="0 2.5 0.2" width="3.5" height="0.05" depth="0.4" material="color: #34495e"></a-box>
-                        <!-- Các lọ hóa chất trang trí trên kệ -->
-                        <a-cylinder position="-1 2.8 0.2" radius="0.15" height="0.5" material="color: #e67e22; opacity: 0.8"></a-cylinder>
-                        <a-cylinder position="-0.5 2.8 0.2" radius="0.12" height="0.4" material="color: #2ecc71; opacity: 0.8"></a-cylinder>
-                        <a-cylinder position="0.5 2.8 0.2" radius="0.15" height="0.5" material="color: #3498db; opacity: 0.8"></a-cylinder>
+                    <!-- Kệ để hóa chất trên tường sau -->
+                    <a-entity position="0 0 -4.5">
+                        <a-box position="0 2 0" width="6" height="0.1" depth="0.5" material="color: #546e7a"></a-box>
+                        <!-- Các lọ hóa chất trang trí -->
+                        <a-cylinder position="-1.5 2.4 0" radius="0.15" height="0.6" material="color: #fbc02d; opacity: 0.8"></a-cylinder>
+                        <a-cylinder position="-1 2.4 0" radius="0.12" height="0.5" material="color: #d32f2f; opacity: 0.8"></a-cylinder>
+                        <a-cylinder position="1 2.4 0" radius="0.18" height="0.7" material="color: #1976d2; opacity: 0.8"></a-cylinder>
+                        <a-cylinder position="1.6 2.4 0" radius="0.12" height="0.4" material="color: #388e3c; opacity: 0.8"></a-cylinder>
                     </a-entity>
                 </a-entity>
 
-                <!-- KHU VỰC THÍ NGHIỆM CHI TIẾT -->
+                <!-- KHU VỰC THÍ NGHIỆM CHI TIẾT (Giữ nguyên code cũ) -->
                 <a-entity id="experiment-zone" position="0 1.55 0">
                     
-                    <!-- Ống nghiệm thủy tinh cao cấp -->
+                    <!-- Ống nghiệm thủy tinh -->
                     <a-entity id="test-tube-unit">
                         <a-cylinder height="3" radius="0.4" material="color: #fff; opacity: 0.2; transparent: true; metalness: 1; roughness: 0"></a-cylinder>
                         <a-sphere position="0 -1.5 0" radius="0.4" theta-length="90" rotation="180 0 0" material="color: #fff; opacity: 0.2; transparent: true"></a-sphere>
@@ -100,7 +110,7 @@
                         </a-entity>
                     </a-entity>
 
-                    <!-- Pipette treo lơ lửng chờ lệnh -->
+                    <!-- Pipette -->
                     <a-entity id="dropper" position="1.5 3 0" rotation="0 0 -20">
                         <a-sphere radius="0.25" scale="1 1.5 1" material="color: #2c3e50"></a-sphere>
                         <a-cylinder height="2" radius="0.05" position="0 -1.2 0" material="color: #fff; opacity: 0.3; transparent: true"></a-cylinder>
@@ -110,8 +120,8 @@
                     <a-sphere id="iodine-drop" radius="0.05" material="color: #8b4513" visible="false"></a-sphere>
                 </a-entity>
 
-                <!-- Ánh sáng nội bộ phòng Lab -->
-                <a-entity light="type: point; intensity: 0.8; distance: 10" position="0 4 2"></a-entity>
+                <!-- Ánh sáng nội bộ -->
+                <a-entity light="type: point; intensity: 0.8; distance: 20" position="0 4 0"></a-entity>
             </a-entity>
         </a-marker>
 
@@ -127,7 +137,6 @@
         const dropper = document.querySelector('#dropper');
         const iodineDrop = document.querySelector('#iodine-drop');
 
-        // Logic giữ cho phòng Lab luôn đứng thẳng
         function syncLab() {
             if (marker.object3D.visible) {
                 const rot = marker.object3D.rotation;
@@ -142,7 +151,6 @@
             document.querySelector('#action-btn').disabled = true;
             statusText.textContent = "Hệ thống: Đang trích xuất Iodine...";
 
-            // Di chuyển Pipette
             dropper.setAttribute('animation', { property: 'position', to: '0 3.5 0', dur: 1000, easing: 'easeInOutQuad' });
             dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 0', dur: 800 });
 
@@ -165,7 +173,7 @@
             }, 1200);
         }
 
-        marker.addEventListener('markerFound', () => { statusText.textContent = "Đã kết nối phòng Lab ảo!"; });
+        marker.addEventListener('markerFound', () => { statusText.textContent = "Phòng Lab ảo đã sẵn sàng!"; });
     </script>
 </body>
 </html>
