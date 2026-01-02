@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Thí nghiệm AR: Hồ tinh bột và Iodine</title>
+    <title>Phòng Thí Nghiệm Ảo AR</title>
     <!-- Import A-Frame và AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
         #ui-layer {
             position: absolute;
             bottom: 20px;
@@ -24,263 +19,153 @@
             z-index: 10;
             pointer-events: none;
         }
-
         .control-panel {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 20px;
+            background: rgba(10, 25, 47, 0.85);
+            padding: 15px 25px;
+            border-radius: 15px;
             display: inline-block;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
             pointer-events: auto;
-            max-width: 90%;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(5px);
+            border: 1px solid #00e5ff;
+            color: white;
+            backdrop-filter: blur(10px);
         }
-
-        h3 {
-            margin: 0 0 5px 0;
-            color: #1a237e;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        p {
-            margin: 3px 0;
-            font-size: 13px;
-            color: #333;
-        }
-
+        h3 { margin: 0 0 5px 0; font-size: 16px; color: #00e5ff; text-transform: uppercase; }
         button {
-            background: linear-gradient(135deg, #3949ab, #5c6bc0);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 10px 5px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(57, 73, 171, 0.4);
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            color: white; border: none; padding: 10px 20px; border-radius: 5px;
+            font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s;
         }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        button:disabled {
-            background: #9e9e9e;
-            box-shadow: none;
-        }
-
-        #status-text {
-            font-weight: bold;
-            color: #d81b60;
-        }
-
-        .interaction-guide {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            text-align: left;
-            pointer-events: none;
-            border-left: 4px solid #3949ab;
-        }
+        button:hover { box-shadow: 0 0 15px #00e5ff; }
+        #status-text { color: #f1c40f; font-size: 13px; }
     </style>
 </head>
 <body style="margin: 0px; overflow: hidden;">
 
-    <div class="interaction-guide">
-        ✨ <b>Không gian Lab Không trọng lực</b><br>
-        🖐️ 1 ngón: Xoay dụng cụ lơ lửng<br>
-        ✌️ 2 ngón: Phóng to / Thu nhỏ
-    </div>
-
     <div id="ui-layer">
         <div class="control-panel">
-            <h3>Phòng Thí Nghiệm AR Hiện Đại</h3>
-            <p>Trạng thái: <span id="status-text">Đang quét mã Hiro...</span></p>
-            <button id="action-btn" onclick="startReaction()">Nhỏ Iodine thuốc thử</button>
-            <button id="reset-btn" onclick="resetExperiment()" style="background: #e53935; display: none;">Làm lại</button>
+            <h3>Hệ Thống Thực Hành Ảo v2.0</h3>
+            <p id="status-text">Đang thiết lập phòng Lab...</p>
+            <button id="action-btn" onclick="startReaction()">Tiến hành thí nghiệm</button>
+            <button id="reset-btn" onclick="location.reload()" style="display: none; background: #e74c3c;">Làm mới phòng Lab</button>
         </div>
     </div>
 
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="antialias: true; colorManagement: true;">
         
-        <!-- Ánh sáng tinh tế cho không gian AR -->
-        <a-entity light="type: ambient; color: #FFF; intensity: 0.8"></a-entity>
-        <a-entity light="type: directional; color: #FFF; intensity: 1.5" position="-1 5 2"></a-entity>
-        <a-entity light="type: point; color: #FFF; intensity: 1" position="2 4 3"></a-entity>
+        <a-assets>
+            <!-- Texture giả lập mặt bàn đá và tường -->
+            <a-mixin id="wall-mat" material="color: #f0f0f0; roughness: 1; metalness: 0"></a-mixin>
+            <a-mixin id="table-mat" material="color: #2c3e50; roughness: 0.3; metalness: 0.5"></a-mixin>
+        </a-assets>
 
         <a-marker preset="hiro" id="hiro-marker">
-            <a-entity id="main-rig" scale="0.7 0.7 0.7">
+            <a-entity id="main-rig" scale="0.5 0.5 0.5">
                 
-                <!-- HIỆU ỨNG VÒNG TRÒN ĐẾ DƯỚI VẬT THỂ (CHO CẢM GIÁC CÔNG NGHỆ) -->
-                <a-ring color="#3949ab" radius-inner="0.8" radius-outer="0.85" rotation="-90 0 0" position="0 -0.5 0" opacity="0.5">
-                    <a-animation attribute="visible" to="true" dur="1000" repeat="indefinite"></a-animation>
-                </a-ring>
-
-                <!-- ỐNG NGHIỆM LƠ LỬNG (FLOATING TEST TUBE) -->
-                <a-entity id="test-tube-container" position="0 0.5 0">
-                    <!-- Thân ống - Trắng trong suốt -->
-                    <a-cylinder height="4.5" radius="0.6" position="0 2.25 0" 
-                        material="color: #ffffff; opacity: 0.15; transparent: true; metalness: 1; roughness: 0; side: double; depthWrite: false;">
-                    </a-cylinder>
-                    <!-- Miệng ống -->
-                    <a-torus radius="0.6" radius-tubular="0.02" position="0 4.5 0" rotation="90 0 0"
-                        material="color: #ffffff; opacity: 0.3; transparent: true; metalness: 1; roughness: 0;">
-                    </a-torus>
-                    <!-- Đáy ống -->
-                    <a-sphere radius="0.6" position="0 0 0" theta-length="90" rotation="180 0 0"
-                        material="color: #ffffff; opacity: 0.15; transparent: true; metalness: 1; roughness: 0; side: double; depthWrite: false;">
-                    </a-sphere>
+                <!-- CẤU TRÚC PHÒNG THỰC HÀNH (VIRTUAL ENVIRONMENT) -->
+                <a-entity id="lab-environment">
+                    <!-- Sàn phòng lab ngay trên marker -->
+                    <a-plane width="10" height="10" rotation="-90 0 0" material="color: #bdc3c7; src: url(https://fany.savina.com/wp-content/uploads/2021/05/tile-texture.jpg); repeat: 5 5"></a-plane>
                     
-                    <!-- CHẤT LỎNG HỒ TINH BỘT -->
-                    <a-entity id="liquid-group" position="0 0.2 0">
-                        <a-cylinder id="liquid" height="1.8" radius="0.57" position="0 0.9 0"
-                            material="color: #ffffff; opacity: 0.8; transparent: true; roughness: 0.1">
-                        </a-cylinder>
-                        <a-sphere id="liquid-bottom" radius="0.57" position="0 0 0" theta-length="90" rotation="180 0 0"
-                            material="color: #ffffff; opacity: 0.8; transparent: true; roughness: 0.1">
-                        </a-sphere>
-                        <a-circle id="liquid-surface" radius="0.57" position="0 1.8 0" rotation="-90 0 0"
-                            material="color: #ffffff; opacity: 0.9; transparent: true; metalness: 0.3">
-                        </a-circle>
+                    <!-- Bàn thí nghiệm chính -->
+                    <a-box position="0 0.75 0" width="4" height="1.5" depth="2" mixin="table-mat">
+                        <!-- Viền nhôm mặt bàn -->
+                        <a-box position="0 0.75 0" width="4.1" height="0.1" depth="2.1" material="color: #95a5a6; metalness: 0.8"></a-box>
+                    </a-box>
+
+                    <!-- Tường sau và giá kệ -->
+                    <a-entity position="0 0 -1">
+                        <a-box position="0 2 0" width="4" height="4" depth="0.1" mixin="wall-mat"></a-box>
+                        <!-- Kệ để hóa chất -->
+                        <a-box position="0 2.5 0.2" width="3.5" height="0.05" depth="0.4" material="color: #34495e"></a-box>
+                        <!-- Các lọ hóa chất trang trí trên kệ -->
+                        <a-cylinder position="-1 2.8 0.2" radius="0.15" height="0.5" material="color: #e67e22; opacity: 0.8"></a-cylinder>
+                        <a-cylinder position="-0.5 2.8 0.2" radius="0.12" height="0.4" material="color: #2ecc71; opacity: 0.8"></a-cylinder>
+                        <a-cylinder position="0.5 2.8 0.2" radius="0.15" height="0.5" material="color: #3498db; opacity: 0.8"></a-cylinder>
+                    </a-entity>
+                </a-entity>
+
+                <!-- KHU VỰC THÍ NGHIỆM CHI TIẾT -->
+                <a-entity id="experiment-zone" position="0 1.55 0">
+                    
+                    <!-- Ống nghiệm thủy tinh cao cấp -->
+                    <a-entity id="test-tube-unit">
+                        <a-cylinder height="3" radius="0.4" material="color: #fff; opacity: 0.2; transparent: true; metalness: 1; roughness: 0"></a-cylinder>
+                        <a-sphere position="0 -1.5 0" radius="0.4" theta-length="90" rotation="180 0 0" material="color: #fff; opacity: 0.2; transparent: true"></a-sphere>
+                        
+                        <!-- Dung dịch -->
+                        <a-entity id="liquid-contain">
+                            <a-cylinder id="liquid" height="1.2" radius="0.38" position="0 -0.8 0" material="color: #ffffff; opacity: 0.7; transparent: true"></a-cylinder>
+                            <a-circle id="liquid-surface" radius="0.38" position="0 -0.2 0" rotation="-90 0 0" material="color: #ffffff; opacity: 0.9"></a-circle>
+                        </a-entity>
                     </a-entity>
 
-                    <!-- Nhãn chữ lơ lửng -->
-                    <a-text value="Hồ Tinh Bột" align="center" position="0 -1 0.8" rotation="0 0 0" color="white" width="4"></a-text>
+                    <!-- Pipette treo lơ lửng chờ lệnh -->
+                    <a-entity id="dropper" position="1.5 3 0" rotation="0 0 -20">
+                        <a-sphere radius="0.25" scale="1 1.5 1" material="color: #2c3e50"></a-sphere>
+                        <a-cylinder height="2" radius="0.05" position="0 -1.2 0" material="color: #fff; opacity: 0.3; transparent: true"></a-cylinder>
+                        <a-cylinder height="0.6" radius="0.03" position="0 -1.5 0" material="color: #8b4513"></a-cylinder>
+                    </a-entity>
+
+                    <a-sphere id="iodine-drop" radius="0.05" material="color: #8b4513" visible="false"></a-sphere>
                 </a-entity>
 
-                <!-- PIPETTE LƠ LỬNG -->
-                <a-entity id="dropper" position="2 5.5 0.5" rotation="0 10 -30">
-                    <!-- Bầu cao su xám đen -->
-                    <a-sphere radius="0.3" position="0 1.8 0" scale="1 1.6 1" material="color: #212121; roughness: 1"></a-sphere>
-                    <!-- Thân thủy tinh -->
-                    <a-cylinder height="3.2" radius="0.08" position="0 -0.4 0"
-                        material="color: #ffffff; opacity: 0.2; transparent: true; metalness: 1; roughness: 0"></a-cylinder>
-                    <!-- Iodine màu đỏ nâu bên trong -->
-                    <a-cylinder height="1" radius="0.05" position="0 -1.2 0" material="color: #8b4513; opacity: 0.9"></a-cylinder>
-                </a-entity>
-
-                <!-- GIỌT IODINE KHI RƠI -->
-                <a-sphere id="iodine-drop" radius="0.08" material="color: #8b4513; metalness: 0.5; roughness: 0.2" visible="false"></a-sphere>
-
+                <!-- Ánh sáng nội bộ phòng Lab -->
+                <a-entity light="type: point; intensity: 0.8; distance: 10" position="0 4 2"></a-entity>
             </a-entity>
         </a-marker>
 
-        <a-entity camera id="main-camera"></a-entity>
+        <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        const rig = document.querySelector('#main-rig');
         const marker = document.querySelector('#hiro-marker');
+        const rig = document.querySelector('#main-rig');
+        const statusText = document.querySelector('#status-text');
         const liquid = document.querySelector('#liquid');
-        const liquidBottom = document.querySelector('#liquid-bottom');
         const liquidSurface = document.querySelector('#liquid-surface');
         const dropper = document.querySelector('#dropper');
         const iodineDrop = document.querySelector('#iodine-drop');
-        const actionBtn = document.querySelector('#action-btn');
-        const resetBtn = document.querySelector('#reset-btn');
-        const statusText = document.querySelector('#status-text');
 
-        let isDragging = false;
-        let prevX = 0;
-        let initialDist = 0;
-        let currentScale = 0.7;
-        let userRotationY = 0;
-
-        // Cơ chế Auto-leveling: Ép vật thể luôn thẳng đứng bất kể hướng của marker
-        function updateLeveling() {
-            if (!marker.object3D.visible) {
-                requestAnimationFrame(updateLeveling);
-                return;
+        // Logic giữ cho phòng Lab luôn đứng thẳng
+        function syncLab() {
+            if (marker.object3D.visible) {
+                const rot = marker.object3D.rotation;
+                rig.object3D.rotation.x = -rot.x;
+                rig.object3D.rotation.z = -rot.z;
             }
-            const mRot = marker.object3D.rotation;
-            // Triệt tiêu góc X và Z của marker để vật thể luôn song song với phương thẳng đứng của Camera
-            rig.object3D.rotation.x = -mRot.x;
-            rig.object3D.rotation.z = -mRot.z;
-            // Cho phép người dùng xoay quanh ống nghiệm
-            rig.object3D.rotation.y = userRotationY - mRot.y;
-            requestAnimationFrame(updateLeveling);
+            requestAnimationFrame(syncLab);
         }
-        updateLeveling();
-
-        // Xử lý tương tác cảm ứng
-        document.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; });
-        document.addEventListener('touchstart', e => {
-            if (e.touches.length === 1) {
-                isDragging = true;
-                prevX = e.touches[0].clientX;
-            } else if (e.touches.length === 2) {
-                initialDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-            }
-        });
-
-        document.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            userRotationY += (e.clientX - prevX) * 0.01;
-            prevX = e.clientX;
-        });
-
-        document.addEventListener('touchmove', e => {
-            if (e.touches.length === 1 && isDragging) {
-                userRotationY += (e.touches[0].clientX - prevX) * 0.015;
-                prevX = e.touches[0].clientX;
-            } else if (e.touches.length === 2) {
-                let dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                let zoom = dist / initialDist;
-                currentScale = Math.min(Math.max(currentScale * zoom, 0.2), 2.5);
-                rig.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
-                initialDist = dist;
-            }
-        });
-
-        document.addEventListener('mouseup', () => isDragging = false);
-        document.addEventListener('touchend', () => isDragging = false);
+        syncLab();
 
         function startReaction() {
-            actionBtn.disabled = true;
-            statusText.textContent = "Đang thực hiện nhỏ giọt...";
+            document.querySelector('#action-btn').disabled = true;
+            statusText.textContent = "Hệ thống: Đang trích xuất Iodine...";
 
-            // Hiệu ứng Pipette di chuyển lơ lửng tới trên miệng ống
-            dropper.setAttribute('animation', { property: 'position', to: '0 5.8 0', dur: 1000, easing: 'easeInOutQuad' });
-            dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 0', dur: 800, easing: 'easeInOutQuad' });
+            // Di chuyển Pipette
+            dropper.setAttribute('animation', { property: 'position', to: '0 3.5 0', dur: 1000, easing: 'easeInOutQuad' });
+            dropper.setAttribute('animation__2', { property: 'rotation', to: '0 0 0', dur: 800 });
 
             setTimeout(() => {
                 iodineDrop.setAttribute('visible', 'true');
-                iodineDrop.setAttribute('position', '0 4 0');
-                iodineDrop.setAttribute('animation', { property: 'position', to: '0 2.2 0', dur: 800, easing: 'easeInQuad' });
+                iodineDrop.setAttribute('position', '0 2 0');
+                iodineDrop.setAttribute('animation', { property: 'position', to: '0 1.2 0', dur: 600 });
 
                 setTimeout(() => {
                     iodineDrop.setAttribute('visible', 'false');
-                    statusText.textContent = "Hoàn tất: Màu xanh tím đặc trưng xuất hiện!";
+                    statusText.textContent = "Phản ứng thành công: Xuất hiện phức màu Xanh Tím!";
                     
-                    const starchBlue = "#1a237e"; // Màu xanh tím đậm
-                    const colorAnim = { property: 'material.color', to: starchBlue, dur: 2000 };
-                    liquid.setAttribute('animation', colorAnim);
-                    liquidBottom.setAttribute('animation', colorAnim);
-                    liquidSurface.setAttribute('animation', colorAnim);
+                    const starchBlue = "#1a237e";
+                    liquid.setAttribute('animation', { property: 'material.color', to: starchBlue, dur: 1500 });
+                    liquidSurface.setAttribute('animation', { property: 'material.color', to: starchBlue, dur: 1500 });
 
-                    actionBtn.style.display = 'none';
-                    resetBtn.style.display = 'inline-block';
-                }, 850);
+                    document.querySelector('#action-btn').style.display = 'none';
+                    document.querySelector('#reset-btn').style.display = 'inline-block';
+                }, 650);
             }, 1200);
         }
 
-        function resetExperiment() {
-            location.reload();
-        }
-
-        marker.addEventListener('markerFound', () => {
-            statusText.textContent = "Hệ thống AR sẵn sàng!";
-        });
+        marker.addEventListener('markerFound', () => { statusText.textContent = "Đã kết nối phòng Lab ảo!"; });
     </script>
 </body>
 </html>
