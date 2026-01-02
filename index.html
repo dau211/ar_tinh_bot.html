@@ -110,26 +110,31 @@
                 gesture-handler="minScale: 0.5; maxScale: 3">
                 
                 <a-entity id="lab-equipment">
-                    <!-- TRÌNH TỰ HÀNG NGANG DƯỚI BÀN (y = -0.5): Starch | Cold | [Tube Area] | Hot | Iodine -->
+                    <!-- TRÌNH TỰ HÀNG NGANG: Starch | Cold | [Tube Area] | Hot | Iodine -->
+                    <!-- Cao độ y=-0.5 là mặt sàn chung cho đáy tất cả dụng cụ -->
 
-                    <!-- Mặt bàn chính cho ống nghiệm (giữa) -->
-                    <a-box position="0 0 0" width="0.4" height="0.05" depth="0.4" color="#333"></a-box>
+                    <!-- Giá đỡ ống nghiệm (Mặt đáy nằm tại y=-0.5) -->
+                    <a-box position="0 -0.475 0" width="0.4" height="0.05" depth="0.4" color="#333"></a-box>
 
-                    <!-- 1. Lọ đựng Starch -->
+                    <!-- 1. Lọ đựng Starch (Đáy tại y=-0.5) -->
                     <a-entity position="-1.0 -0.5 0" id="flask-starch">
                         <a-cone radius-bottom="0.15" radius-top="0.05" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5"></a-cone>
                         <a-cylinder radius="0.05" height="0.1" position="0 0.35 0" material="shader: flat; color: #f5f5f5"></a-cylinder>
                         <a-text value="Starch" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 2. Cốc nước Lạnh (Thủy tinh) -->
+                    <!-- 2. Cốc nước Lạnh (Ca thủy tinh to, không nắp, đáy tại y=-0.5) -->
                     <a-entity id="beaker-cold" position="-0.5 -0.5 0">
-                        <a-cylinder radius="0.15" height="0.4" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1"></a-cylinder>
-                        <a-cylinder radius="0.14" height="0.35" position="0 0.05 0" material="color: #00e5ff; opacity: 0.3; transparent: true"></a-cylinder>
-                        <a-text value="Nuoc Lanh" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
+                        <!-- Vỏ ca thủy tinh -->
+                        <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1" open-ended="true" position="0 0.25 0"></a-cylinder>
+                        <!-- Đáy ca -->
+                        <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.2; transparent: true; side: double"></a-circle>
+                        <!-- Mực nước lạnh -->
+                        <a-cylinder radius="0.21" height="0.4" position="0 0.2 0" material="color: #00e5ff; opacity: 0.3; transparent: true"></a-cylinder>
+                        <a-text value="Nuoc Lanh" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- Cụm Ống nghiệm và Vòng giữ (Trung tâm trên cao) -->
+                    <!-- Cụm Ống nghiệm và Vòng giữ -->
                     <a-entity id="moving-tube-assembly" position="0 0 0">
                         <a-torus position="0 1.5 0" rotation="90 0 0" radius="0.12" radius-tubular="0.01" material="color: #fff; opacity: 0.5; transparent: true"></a-torus>
                         <a-cylinder id="test-tube" position="0 0.8 0" radius="0.12" height="1.4" material="color: #fff; opacity: 0.15; transparent: true; side: double; metalness: 0.2; roughness: 0.1"></a-cylinder>
@@ -138,14 +143,18 @@
                         <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.118" material="shader: flat; opacity: 0.4; transparent: true" visible="false"></a-sphere>
                     </a-entity>
 
-                    <!-- 3. Cốc nước Nóng (Thủy tinh) -->
+                    <!-- 3. Cốc nước Nóng (Ca thủy tinh to, không nắp, đáy tại y=-0.5) -->
                     <a-entity id="beaker-hot" position="0.5 -0.5 0">
-                        <a-cylinder radius="0.15" height="0.4" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1"></a-cylinder>
-                        <a-cylinder radius="0.14" height="0.35" position="0 0.05 0" material="color: #ff4500; opacity: 0.3; transparent: true"></a-cylinder>
-                        <a-text value="Nuoc Nong" position="0 0.5 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
+                        <!-- Vỏ ca thủy tinh -->
+                        <a-cylinder radius="0.22" height="0.5" material="color: #ffffff; opacity: 0.2; transparent: true; side: double; metalness: 0.5; roughness: 0.1" open-ended="true" position="0 0.25 0"></a-cylinder>
+                        <!-- Đáy ca -->
+                        <a-circle radius="0.22" rotation="-90 0 0" material="color: #ffffff; opacity: 0.2; transparent: true; side: double"></a-circle>
+                        <!-- Mực nước nóng -->
+                        <a-cylinder radius="0.21" height="0.4" position="0 0.2 0" material="color: #ff4500; opacity: 0.3; transparent: true"></a-cylinder>
+                        <a-text value="Nuoc Nong" position="0 0.6 0" scale="0.25 0.25 0.25" align="center" color="#cccccc"></a-text>
                     </a-entity>
 
-                    <!-- 4. Lọ đựng Iodine -->
+                    <!-- 4. Lọ đựng Iodine (Đáy tại y=-0.5) -->
                     <a-entity position="1.0 -0.5 0" id="flask-iodine">
                         <a-cone radius-bottom="0.15" radius-top="0.05" height="0.3" position="0 0.15 0" material="shader: flat; color: #f5f5f5"></a-cone>
                         <a-cylinder radius="0.05" height="0.1" position="0 0.35 0" material="shader: flat; color: #f5f5f5"></a-cylinder>
@@ -281,8 +290,8 @@
         btnHot.addEventListener('click', async () => {
             btnHot.disabled = true;
             instruction.innerText = "Đang nhúng ống nghiệm...";
-            // Nhúng vào cốc nước nóng ở x=0.5
-            movingTubeAssembly.setAttribute('animation', 'property: position; to: 0.5 -0.6 0; dur: 1500; easing: easeInOutQuad');
+            // Nhúng sâu vào cốc nước nóng
+            movingTubeAssembly.setAttribute('animation', 'property: position; to: 0.5 -0.3 0; dur: 1500; easing: easeInOutQuad');
             await new Promise(r => setTimeout(r, 1600));
             
             liquid.setAttribute('animation__fade', { property: 'material.color', to: COLOR_STARCH, dur: 2000 });
@@ -301,8 +310,8 @@
         btnCold.addEventListener('click', async () => {
             btnCold.disabled = true;
             instruction.innerText = "Đang nhúng ống nghiệm...";
-            // Nhúng vào cốc nước lạnh ở x=-0.5
-            movingTubeAssembly.setAttribute('animation', 'property: position; to: -0.5 -0.6 0; dur: 1500; easing: easeInOutQuad');
+            // Nhúng sâu vào cốc nước lạnh
+            movingTubeAssembly.setAttribute('animation', 'property: position; to: -0.5 -0.3 0; dur: 1500; easing: easeInOutQuad');
             await new Promise(r => setTimeout(r, 1600));
             
             liquid.setAttribute('animation__recolor', { property: 'material.color', to: COLOR_STARCH_IODINE, dur: 2000 });
