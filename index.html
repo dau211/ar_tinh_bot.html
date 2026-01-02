@@ -119,8 +119,9 @@
                         <a-sphere position="0 0.1 0" radius="0.12" material="color: #fff; opacity: 0.2; transparent: true"></a-sphere>
                         
                         <!-- CHẤT LỎNG TRONG ỐNG NGHIỆM -->
-                        <a-cylinder id="liquid" position="0 0.2 0" radius="0.118" height="0.01" material="shader: flat; opacity: 1.0; transparent: false" visible="false"></a-cylinder>
-                        <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.118" material="shader: flat; opacity: 1.0; transparent: false" visible="false"></a-sphere>
+                        <!-- Sử dụng shader: standard và các thuộc tính trong suốt cực cao cho giai đoạn đầu -->
+                        <a-cylinder id="liquid" position="0 0.2 0" radius="0.118" height="0.01" material="shader: standard; metalness: 0.1; roughness: 0.1; opacity: 0.3; transparent: true" visible="false"></a-cylinder>
+                        <a-sphere id="liquid-bottom" position="0 0.11 0" radius="0.118" material="shader: standard; metalness: 0.1; roughness: 0.1; opacity: 0.3; transparent: true" visible="false"></a-sphere>
                     </a-entity>
 
                     <!-- Lọ hóa chất (Bình nhựa trắng đậm) -->
@@ -177,10 +178,10 @@
 
         let currentStep = 0;
 
-        // Định nghĩa màu sắc đúng bản chất hóa học (Dùng để hút và nhỏ giọt)
-        const COLOR_WATER_CLEAR = "#e0f7fa"; // Trong suốt như nước
+        // Định nghĩa màu sắc đúng bản chất hóa học
+        const COLOR_WATER_CLEAR = "#ffffff"; // Màu trắng hoàn toàn trong suốt
         const COLOR_CUSO4_BLUE = "#318CE7";  // Xanh lam của CuSO4
-        const COLOR_COMPLEX_DARK_BLUE = "#000080"; // Xanh lam thẫm của phức đồng
+        const COLOR_COMPLEX_DARK_BLUE = "#000080"; // Xanh lam thẫm (Royal Blue)
 
         marker.addEventListener('markerFound', () => {
             if (currentStep === 0) {
@@ -203,32 +204,28 @@
         }
         updateOrientation();
 
-        async function runPipetteSequence(flaskPos, color, targetHeight, targetPos) {
+        async function runPipetteSequence(flaskPos, color, targetHeight, targetPos, isTransparent = true) {
             pipette.setAttribute('visible', 'true');
             pipette.setAttribute('position', {x: flaskPos.x, y: 1.0, z: flaskPos.z});
             pipetteLiqBody.setAttribute('visible', 'false');
             pipetteLiqTip.setAttribute('visible', 'false');
             await new Promise(r => setTimeout(r, 500));
 
-            // Hạ pipette vào bình nhựa
             pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 0.35 ' + flaskPos.z + '; dur: 600');
             await new Promise(r => setTimeout(r, 700));
 
-            // Hiện màu hóa chất bên trong pipette
-            pipetteLiqBody.setAttribute('material', 'color', color);
-            pipetteLiqTip.setAttribute('material', 'color', color);
+            pipetteLiqBody.setAttribute('material', { color: color, opacity: isTransparent ? 0.4 : 1.0, transparent: isTransparent });
+            pipetteLiqTip.setAttribute('material', { color: color, opacity: isTransparent ? 0.4 : 1.0, transparent: isTransparent });
             pipetteLiqBody.setAttribute('visible', 'true');
             pipetteLiqTip.setAttribute('visible', 'true');
             await new Promise(r => setTimeout(r, 400));
 
-            // Nhấc lên và di chuyển tới ống nghiệm
             pipette.setAttribute('animation', 'property: position; to: ' + flaskPos.x + ' 1.3 ' + flaskPos.z + '; dur: 600');
             await new Promise(r => setTimeout(r, 700));
             pipette.setAttribute('animation', 'property: position; to: 0 1.6 0; dur: 800');
             await new Promise(r => setTimeout(r, 900));
 
-            // Nhỏ giọt với màu tương ứng
-            drop.setAttribute('color', color);
+            drop.setAttribute('material', { color: color, opacity: isTransparent ? 0.4 : 1.0, transparent: isTransparent });
             drop.setAttribute('visible', 'true');
             drop.setAttribute('position', '0 1.1 0');
             drop.setAttribute('animation', 'property: position; to: 0 0.4 0; dur: 650; easing: easeInQuad');
@@ -242,7 +239,6 @@
             pipette.setAttribute('animation', 'property: position; to: 0 2.2 0; dur: 600');
             setTimeout(() => pipette.setAttribute('visible', 'false'), 650);
 
-            // Cập nhật chất lỏng trong ống nghiệm
             liquid.setAttribute('visible', 'true');
             liquidBottom.setAttribute('visible', 'true');
             liquid.setAttribute('animation__height', { property: 'height', to: targetHeight, dur: 1000 });
@@ -253,9 +249,9 @@
         btnGl.addEventListener('click', async () => {
             btnGl.disabled = true;
             instruction.innerText = "Đang hút Glucose...";
-            await runPipetteSequence({x: -0.7, y: 0.4, z: 0.5}, COLOR_WATER_CLEAR, 0.3, "0 0.25 0");
-            liquid.setAttribute('material', 'color', COLOR_WATER_CLEAR);
-            liquidBottom.setAttribute('material', 'color', COLOR_WATER_CLEAR);
+            await runPipetteSequence({x: -0.7, y: 0.4, z: 0.5}, COLOR_WATER_CLEAR, 0.3, "0 0.25 0", true);
+            liquid.setAttribute('material', { color: COLOR_WATER_CLEAR, opacity: 0.2, transparent: true });
+            liquidBottom.setAttribute('material', { color: COLOR_WATER_CLEAR, opacity: 0.2, transparent: true });
             statusText.innerText = "Đã thêm Glucose trong suốt.";
             instruction.innerText = "Bước 2: Thêm dung dịch NaOH";
             btnNa.disabled = false;
@@ -264,9 +260,9 @@
         btnNa.addEventListener('click', async () => {
             btnNa.disabled = true;
             instruction.innerText = "Đang hút NaOH...";
-            await runPipetteSequence({x: 0, y: 0.4, z: 0.5}, COLOR_WATER_CLEAR, 0.5, "0 0.35 0");
-            liquid.setAttribute('material', 'color', COLOR_WATER_CLEAR);
-            liquidBottom.setAttribute('material', 'color', COLOR_WATER_CLEAR);
+            await runPipetteSequence({x: 0, y: 0.4, z: 0.5}, COLOR_WATER_CLEAR, 0.5, "0 0.35 0", true);
+            liquid.setAttribute('material', { color: COLOR_WATER_CLEAR, opacity: 0.2, transparent: true });
+            liquidBottom.setAttribute('material', { color: COLOR_WATER_CLEAR, opacity: 0.2, transparent: true });
             statusText.innerText = "Đã thêm NaOH trong suốt.";
             instruction.innerText = "Bước 3: Thêm dung dịch CuSO4";
             btnCu.disabled = false;
@@ -275,17 +271,28 @@
         btnCu.addEventListener('click', async () => {
             btnCu.disabled = true;
             instruction.innerText = "Đang hút CuSO4...";
-            await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, COLOR_CUSO4_BLUE, 0.7, "0 0.45 0");
+            // CuSO4 có màu xanh nhưng vẫn hơi trong suốt khi nhỏ giọt
+            await runPipetteSequence({x: 0.7, y: 0.4, z: 0.5}, COLOR_CUSO4_BLUE, 0.7, "0 0.45 0", true);
             
             statusText.innerText = "Phản ứng tạo phức đồng-glucose...";
             
-            // Đổi màu khối chất lỏng thành màu xanh thẫm đồng nhất
-            liquid.setAttribute('material', { shader: 'flat', color: COLOR_COMPLEX_DARK_BLUE, opacity: 1.0, transparent: false });
-            liquidBottom.setAttribute('material', { shader: 'flat', color: COLOR_COMPLEX_DARK_BLUE, opacity: 1.0, transparent: false });
+            // Đổi sang shader flat để khử bóng nháy và tạo khối màu thẫm đặc đồng nhất
+            liquid.setAttribute('material', { 
+                shader: 'flat', 
+                color: COLOR_COMPLEX_DARK_BLUE, 
+                opacity: 1.0, 
+                transparent: false 
+            });
+            liquidBottom.setAttribute('material', { 
+                shader: 'flat', 
+                color: COLOR_COMPLEX_DARK_BLUE, 
+                opacity: 1.0, 
+                transparent: false 
+            });
             
             await new Promise(r => setTimeout(r, 500));
             instruction.innerText = "Thí nghiệm hoàn tất!";
-            statusText.innerHTML = "Kết quả: Phức đồng-glucose màu xanh lam thẫm đồng nhất.<br>Bình chứa nhựa đục giúp bảo quản hóa chất tốt hơn.";
+            statusText.innerHTML = "Kết quả: Phức đồng-glucose màu xanh lam thẫm đồng nhất.<br>Khối màu hiện ổn định, không bị hiệu ứng nháy sáng.";
         });
     </script>
 </body>
