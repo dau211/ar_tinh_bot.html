@@ -63,56 +63,63 @@
         <!-- Bàn thí nghiệm gỗ -->
         <a-box position="0 -0.15 0" width="4.5" height="0.1" depth="3" color="#5D4037"></a-box>
 
-        <!-- THÌA (SPOON) -->
+        <!-- CHIẾC THÌA (SPOON) - Thiết kế lại thực tế hơn -->
         <a-entity id="spoon-group" position="0 1.5 0.5" visible="false">
-            <a-cylinder position="0 0 0" radius="0.015" height="0.8" color="#BDBDBD" rotation="0 0 70"></a-cylinder>
-            <a-sphere id="spoon-tip" position="-0.38 -0.13 0" radius="0.08" color="#E0E0E0" scale="1.2 0.3 1"></a-sphere>
-            <!-- Hóa chất bám trên thìa -->
-            <a-sphere id="spoon-powder" position="-0.38 -0.08 0" radius="0.05" color="white" visible="false"></a-sphere>
+            <!-- Cán thìa -->
+            <a-cylinder position="0.3 0 0" radius="0.01" height="0.7" color="#BDBDBD" rotation="0 0 90"></a-cylinder>
+            <!-- Lòng thìa -->
+            <a-entity position="-0.08 0 0" rotation="0 0 0">
+                <a-sphere radius="0.1" color="#E0E0E0" scale="1.4 0.4 1" clip-side="back"></a-sphere>
+                <!-- Hóa chất bám trên thìa -->
+                <a-sphere id="spoon-powder" position="0 0.05 0" radius="0.06" color="white" visible="false"></a-sphere>
+            </a-entity>
         </a-entity>
 
-        <!-- DÃY ĐĨA ĐỰNG HÓA CHẤT (Phía sau) -->
+        <!-- DÃY ĐĨA ĐỰNG HÓA CHẤT -->
         <a-entity position="0 0 -0.8">
-            <!-- Đĩa Na2O -->
             <a-entity position="-1.2 0 0">
                 <a-cylinder radius="0.3" height="0.02" color="#ECEFF1"></a-cylinder>
-                <a-cone id="powder-na" radius-bottom="0.2" height="0.15" color="#FFFFFF" position="0 0.05 0"></a-cone>
+                <a-cone id="powder-na" radius-bottom="0.18" height="0.12" color="#FFFFFF" position="0 0.05 0"></a-cone>
                 <a-text value="Na2O" position="-0.15 0.2 0" rotation="-90 0 0" color="white" width="2"></a-text>
             </a-entity>
-            <!-- Đĩa MgO -->
             <a-entity position="0 0 0">
                 <a-cylinder radius="0.3" height="0.02" color="#ECEFF1"></a-cylinder>
-                <a-cone id="powder-mg" radius-bottom="0.2" height="0.15" color="#F5F5F5" position="0 0.05 0"></a-cone>
+                <a-cone id="powder-mg" radius-bottom="0.18" height="0.12" color="#F5F5F5" position="0 0.05 0"></a-cone>
                 <a-text value="MgO" position="-0.15 0.2 0" rotation="-90 0 0" color="white" width="2"></a-text>
             </a-entity>
-            <!-- Đĩa P2O5 -->
             <a-entity position="1.2 0 0">
                 <a-cylinder radius="0.3" height="0.02" color="#ECEFF1"></a-cylinder>
-                <a-cone id="powder-p" radius-bottom="0.2" height="0.15" color="#FAFAFA" position="0 0.05 0"></a-cone>
+                <a-cone id="powder-p" radius-bottom="0.18" height="0.12" color="#FAFAFA" position="0 0.05 0"></a-cone>
                 <a-text value="P2O5" position="-0.15 0.2 0" rotation="-90 0 0" color="white" width="2"></a-text>
             </a-entity>
         </a-entity>
 
-        <!-- DÃY CỐC NƯỚC (Phía trước) -->
+        <!-- DÃY CỐC NƯỚC (Hiệu ứng mặt nước chân thực) -->
         <a-entity position="0 0 0.4">
             <!-- Cốc 1 -->
             <a-entity id="beaker-na" position="-1.2 0.3 0">
-              <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.2" side="double" open-ended="false"></a-cylinder>
-              <a-cylinder id="liquid-na" radius="0.3" height="0.4" position="0 -0.15 0" color="#E3F2FD" opacity="0.7"></a-cylinder>
+              <!-- Thân cốc -->
+              <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.15" side="double"></a-cylinder>
+              <!-- Khối nước -->
+              <a-cylinder id="liquid-na" radius="0.3" height="0.4" position="0 -0.15 0" color="#B3E5FC" opacity="0.5"></a-cylinder>
+              <!-- Mặt nước (Phần phản chiếu) -->
+              <a-circle radius="0.3" position="0 0.05 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4"></a-circle>
               <a-box id="litmus-na" position="0 0.5 0" width="0.1" height="0.4" depth="0.01" color="#E1BEE7" visible="false"></a-box>
             </a-entity>
 
             <!-- Cốc 2 -->
             <a-entity id="beaker-mg" position="0 0.3 0">
-              <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.2" side="double"></a-cylinder>
-              <a-cylinder id="liquid-mg" radius="0.3" height="0.4" position="0 -0.15 0" color="#E3F2FD" opacity="0.7"></a-cylinder>
+              <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.15" side="double"></a-cylinder>
+              <a-cylinder id="liquid-mg" radius="0.3" height="0.4" position="0 -0.15 0" color="#B3E5FC" opacity="0.5"></a-cylinder>
+              <a-circle radius="0.3" position="0 0.05 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4"></a-circle>
               <a-box id="litmus-mg" position="0 0.5 0" width="0.1" height="0.4" depth="0.01" color="#E1BEE7" visible="false"></a-box>
             </a-entity>
 
             <!-- Cốc 3 -->
             <a-entity id="beaker-p" position="1.2 0.3 0">
-              <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.2" side="double"></a-cylinder>
-              <a-cylinder id="liquid-p" radius="0.3" height="0.4" position="0 -0.15 0" color="#E3F2FD" opacity="0.7"></a-cylinder>
+              <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.15" side="double"></a-cylinder>
+              <a-cylinder id="liquid-p" radius="0.3" height="0.4" position="0 -0.15 0" color="#B3E5FC" opacity="0.5"></a-cylinder>
+              <a-circle radius="0.3" position="0 0.05 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4"></a-circle>
               <a-box id="litmus-p" position="0 0.5 0" width="0.1" height="0.4" depth="0.01" color="#E1BEE7" visible="false"></a-box>
             </a-entity>
         </a-entity>
@@ -138,53 +145,53 @@
         const powderIds = ['powder-na', 'powder-mg', 'powder-p'];
 
         for(let i=0; i < 3; i++) {
-            // Di chuyển thìa tới đĩa
-            status.innerText = "Lấy hóa chất từ đĩa " + (i+1) + "...";
-            spoon.setAttribute('animation', `property: position; to: ${offsets[i]} 0.3 -0.8; dur: 1000; easing: easeInOutQuad`);
-            await new Promise(r => setTimeout(r, 1200));
+            status.innerText = "Đang lấy hóa chất từ đĩa " + (i+1) + "...";
+            // Di chuyển thìa tới đĩa (chỉnh lại vị trí để khớp với lòng thìa)
+            spoon.setAttribute('animation', `property: position; to: ${offsets[i] + 0.1} 0.2 -0.8; dur: 1200; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 1300));
             
-            // Xúc bột
             powderOnSpoon.setAttribute('visible', 'true');
             document.getElementById(powderIds[i]).setAttribute('visible', 'false');
             
-            // Di chuyển tới cốc
-            status.innerText = "Cho vào cốc nước...";
-            spoon.setAttribute('animation', `property: position; to: ${offsets[i]} 1 0.4; dur: 1000; easing: easeInOutQuad`);
-            await new Promise(r => setTimeout(r, 1200));
+            status.innerText = "Đang cho hóa chất vào cốc...";
+            spoon.setAttribute('animation', `property: position; to: ${offsets[i] + 0.1} 0.8 0.4; dur: 1200; easing: easeInOutQuad`);
+            await new Promise(r => setTimeout(r, 1300));
             
-            // Đổ vào cốc
+            // Lắc nhẹ thìa để đổ bột
+            spoon.setAttribute('animation', `property: rotation; to: 0 0 10; dur: 300; dir: alternate; loop: 2`);
+            await new Promise(r => setTimeout(r, 600));
+            spoon.setAttribute('rotation', '0 0 0');
+
             powderOnSpoon.setAttribute('visible', 'false');
-            document.getElementById(liquidIds[i]).setAttribute('animation', 'property: opacity; to: 0.9; dur: 1000');
+            document.getElementById(liquidIds[i]).setAttribute('animation', 'property: opacity; to: 0.85; dur: 1000');
             
-            if(i === 0) status.innerText = "Phản ứng Na2O + H2O tỏa nhiệt mạnh!";
-            if(i === 1) status.innerText = "MgO ít tan trong nước lạnh.";
-            if(i === 2) status.innerText = "P2O5 phản ứng mạnh tạo H3PO4.";
+            if(i === 0) status.innerText = "Na2O + H2O -> 2NaOH (Base mạnh)";
+            if(i === 1) status.innerText = "MgO + H2O -> Mg(OH)2 (Base yếu)";
+            if(i === 2) status.innerText = "P2O5 + 3H2O -> 2H3PO4 (Acid)";
             
             await new Promise(r => setTimeout(r, 1500));
         }
 
         spoon.setAttribute('visible', 'false');
-        status.innerText = "Hòa tan xong các Oxide. Chuyển sang thử quỳ tím.";
+        status.innerText = "Hòa tan xong. Nhấn 'Bước 2' để kiểm tra pH.";
         btnLitmus.disabled = false;
       }
 
       function stepAddLitmus() {
         btnLitmus.disabled = true;
-        status.innerText = "Tiến hành thử độ pH bằng giấy quỳ tím...";
+        status.innerText = "Đang nhúng quỳ tím vào dung dịch...";
         
         const litmusIds = ['litmus-na', 'litmus-mg', 'litmus-p'];
-        const colors = ['#1A237E', '#42A5F5', '#B71C1C']; // Xanh đậm, xanh nhạt, đỏ đậm
+        const colors = ['#0D47A1', '#4FC3F7', '#D32F2F']; 
         const labResults = [
-            "NaOH: Dung dịch Base mạnh (Quỳ hóa xanh)",
-            "Mg(OH)2: Dung dịch Base yếu (Quỳ hóa xanh nhạt)",
-            "H3PO4: Dung dịch Acid (Quỳ hóa đỏ)"
+            "NaOH: pH ≈ 13 (Xanh đậm)",
+            "Mg(OH)2: pH ≈ 9 (Xanh nhạt)",
+            "H3PO4: pH ≈ 2 (Đỏ)"
         ];
 
         litmusIds.forEach((id, index) => {
           const el = document.getElementById(id);
           el.setAttribute('visible', 'true');
-          
-          // Hoạt ảnh nhúng quỳ tím
           el.setAttribute('animation', "property: position; to: 0 0.1 0; dur: 1500; easing: easeInOutCubic");
           
           setTimeout(() => {
