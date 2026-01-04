@@ -1,34 +1,99 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR Hóa Học - Oxide Chu kỳ 3</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <meta charset="utf-8">
+    <title>Thí Nghiệm AR: Oxide Chu Kỳ 3</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+      .ui-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+        z-index: 1000;
+      }
+      button {
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: 2px solid #fff;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button:active { background: #444; }
+      #status-text {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      }
+    </style>
   </head>
   <body style="margin: 0px; overflow: hidden;">
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <div id="status-text">Hướng camera vào Marker Hiro để bắt đầu</div>
+    
+    <div class="ui-container">
+      <button onclick="stepAddOxide()">Bước 1: Thêm Oxide</button>
+      <button onclick="stepAddLitmus()">Bước 2: Thử Quỳ Tím</button>
+      <button onclick="resetLab()">Làm lại</button>
+    </div>
+
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" renderer="logarithmicDepthBuffer: true;">
       
       <a-marker preset="hiro">
-        
-        <a-entity position="-1 0 0">
-            <a-cylinder color="white" opacity="0.3" radius="0.3" height="0.8"></a-cylinder>
-            <a-cylinder id="liquid-na" color="white" radius="0.28" height="0.4" position="0 -0.15 0"></a-cylinder>
-            <a-text value="Na2O" position="-0.2 -0.6 0" rotation="-90 0 0" color="black" width="3"></a-text>
-            <a-text value="NaOH (pH 13)" position="-0.4 0.6 0" rotation="-90 0 0" color="blue" width="2"></a-text>
+        <!-- Bàn thí nghiệm ảo -->
+        <a-box position="0 -0.1 0" width="4" height="0.1" depth="2" color="#cccccc"></a-box>
+
+        <!-- Thao tác thìa (Spoon) - Ẩn mặc định -->
+        <a-entity id="spoon-group" position="0 1.5 0" visible="false">
+            <a-cylinder position="0 0 0" radius="0.02" height="1" color="#888" rotation="0 0 45"></a-cylinder>
+            <a-sphere position="-0.35 -0.35 0" radius="0.1" color="#eee" scale="1 0.3 1"></a-sphere>
         </a-entity>
 
-        <a-entity position="0 0 0">
-            <a-cylinder color="white" opacity="0.3" radius="0.3" height="0.8"></a-cylinder>
-            <a-cylinder id="liquid-mg" color="white" radius="0.28" height="0.4" position="0 -0.15 0"></a-cylinder>
-            <a-text value="MgO" position="-0.2 -0.6 0" rotation="-90 0 0" color="black" width="3"></a-text>
-            <a-text value="Mg(OH)2 (pH 9)" position="-0.4 0.6 0" rotation="-90 0 0" color="cyan" width="2"></a-text>
+        <!-- CỐC 1: Na2O -->
+        <a-entity id="beaker-na" position="-1.2 0.3 0">
+          <a-cylinder radius="0.3" height="0.7" color="white" opacity="0.2" side="double"></a-cylinder>
+          <a-cylinder id="liquid-na" radius="0.29" height="0.4" position="0 -0.1 0" color="#f0f0f0" opacity="0.6"></a-cylinder>
+          <a-text value="Na2O" position="-0.2 -0.5 0.4" rotation="-90 0 0" color="black" width="3"></a-text>
+          <!-- Giấy quỳ -->
+          <a-box id="litmus-na" position="0 0.4 0" width="0.1" height="0.4" depth="0.01" color="#d8bfd8" visible="false"></a-box>
+          <!-- Hiệu ứng bọt -->
+          <a-entity id="bubbles-na" position="0 -0.1 0" visible="false">
+             <a-sphere position="0.1 0.1 0" radius="0.02" color="white"></a-sphere>
+             <a-sphere position="-0.1 0.2 0.1" radius="0.015" color="white"></a-sphere>
+          </a-entity>
         </a-entity>
 
-        <a-entity position="1 0 0">
-            <a-cylinder color="white" opacity="0.3" radius="0.3" height="0.8"></a-cylinder>
-            <a-cylinder id="liquid-p" color="white" radius="0.28" height="0.4" position="0 -0.15 0"></a-cylinder>
-            <a-text value="P2O5" position="-0.2 -0.6 0" rotation="-90 0 0" color="black" width="3"></a-text>
-            <a-text value="H3PO4 (pH 2)" position="-0.4 0.6 0" rotation="-90 0 0" color="red" width="2"></a-text>
+        <!-- CỐC 2: MgO -->
+        <a-entity id="beaker-mg" position="0 0.3 0">
+          <a-cylinder radius="0.3" height="0.7" color="white" opacity="0.2" side="double"></a-cylinder>
+          <a-cylinder id="liquid-mg" radius="0.29" height="0.4" position="0 -0.1 0" color="#f0f0f0" opacity="0.6"></a-cylinder>
+          <a-text value="MgO" position="-0.2 -0.5 0.4" rotation="-90 0 0" color="black" width="3"></a-text>
+          <a-box id="litmus-mg" position="0 0.4 0" width="0.1" height="0.4" depth="0.01" color="#d8bfd8" visible="false"></a-box>
+          <a-entity id="bubbles-mg" position="0 -0.1 0" visible="false">
+            <a-sphere position="0 0.1 0.1" radius="0.02" color="white"></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- CỐC 3: P2O5 -->
+        <a-entity id="beaker-p" position="1.2 0.3 0">
+          <a-cylinder radius="0.3" height="0.7" color="white" opacity="0.2" side="double"></a-cylinder>
+          <a-cylinder id="liquid-p" radius="0.29" height="0.4" position="0 -0.1 0" color="#f0f0f0" opacity="0.6"></a-cylinder>
+          <a-text value="P2O5" position="-0.2 -0.5 0.4" rotation="-90 0 0" color="black" width="3"></a-text>
+          <a-box id="litmus-p" position="0 0.4 0" width="0.1" height="0.4" depth="0.01" color="#d8bfd8" visible="false"></a-box>
+          <a-entity id="bubbles-p" position="0 -0.1 0" visible="false">
+            <a-sphere position="0 0.2 0" radius="0.02" color="white"></a-sphere>
+          </a-entity>
         </a-entity>
 
       </a-marker>
@@ -37,12 +102,66 @@
     </a-scene>
 
     <script>
-      // Logic đơn giản để đổi màu khi chạm (giả lập phản ứng)
-      window.addEventListener('click', function () {
-          document.querySelector('#liquid-na').setAttribute('color', '#0000FF'); // Xanh dương
-          document.querySelector('#liquid-mg').setAttribute('color', '#ADD8E6'); // Xanh nhạt
-          document.querySelector('#liquid-p').setAttribute('color', '#FF0000');  // Đỏ
-      });
+      const status = document.getElementById('status-text');
+      const spoon = document.getElementById('spoon-group');
+      
+      function stepAddOxide() {
+        status.innerText = "Đang thêm Oxide vào nước...";
+        spoon.setAttribute('visible', 'true');
+        
+        // Mô phỏng di chuyển thìa đến từng cốc
+        let t = 0;
+        const positions = [-1.2, 0, 1.2];
+        const liquidIds = ['liquid-na', 'liquid-mg', 'liquid-p'];
+        const bubbleIds = ['bubbles-na', 'bubbles-mg', 'bubbles-p'];
+
+        positions.forEach((pos, index) => {
+          setTimeout(() => {
+            spoon.setAttribute('position', `${pos} 1 0`);
+            document.getElementById(bubbleIds[index]).setAttribute('visible', 'true');
+            
+            // Sau khi cho vào, nước bắt đầu phản ứng
+            setTimeout(() => {
+                if(index === 0) status.innerText = "Na2O tan mạnh, tỏa nhiệt.";
+                if(index === 1) status.innerText = "MgO phản ứng chậm.";
+                if(index === 2) status.innerText = "P2O5 tan mạnh tạo acid.";
+            }, 500);
+          }, index * 1500);
+        });
+
+        setTimeout(() => {
+          spoon.setAttribute('visible', 'false');
+          status.innerText = "Hòa tan xong. Hãy thử bằng quỳ tím.";
+        }, 5000);
+      }
+
+      function stepAddLitmus() {
+        status.innerText = "Nhúng quỳ tím vào các dung dịch...";
+        
+        const litmusIds = ['litmus-na', 'litmus-mg', 'litmus-p'];
+        const colors = ['#0000FF', '#ADD8E6', '#FF0000']; // Xanh đậm, Xanh nhạt, Đỏ
+        const results = [
+            "NaOH: Kiềm mạnh (Xanh)",
+            "Mg(OH)2: Kiềm yếu (Xanh nhạt)",
+            "H3PO4: Acid (Đỏ)"
+        ];
+
+        litmusIds.forEach((id, index) => {
+          const el = document.getElementById(id);
+          el.setAttribute('visible', 'true');
+          // Hiệu ứng nhúng xuống
+          el.setAttribute('animation', "property: position; to: 0 0.1 0; dur: 1000");
+          
+          setTimeout(() => {
+            el.setAttribute('color', colors[index]);
+            status.innerText = results[index];
+          }, 1500 + (index * 1000));
+        });
+      }
+
+      function resetLab() {
+        location.reload();
+      }
     </script>
   </body>
 </html>
