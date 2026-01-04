@@ -1,135 +1,133 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>Thí nghiệm AR – Không Marker</title>
-
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: black;
-  font-family: Arial, sans-serif;
-}
-
-/* Camera nền */
-#camera {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -2;
-}
-
-/* Unity */
-#unity-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-
-#unity-canvas {
-  width: 100%;
-  height: 100%;
-  background: transparent;
-}
-
-/* Nút điều khiển */
-#controls {
-  position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  z-index: 10;
-}
-
-button {
-  padding: 10px 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-}
-</style>
+    <title>Thí nghiệm Hóa học AR: Oxide tác dụng với nước</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #ui-layer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        button:active { background-color: #1e7e34; }
+        .guide {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- Camera -->
-<video id="camera" autoplay playsinline muted></video>
+    <div class="guide">Quét camera vào hình HIRO Marker để hiện thí nghiệm</div>
+    <div id="ui-layer">
+        <button onclick="runExperiment()">Nhúng quỳ tím</button>
+        <button onclick="resetExperiment()" style="background-color: #dc3545; margin-left: 10px;">Làm lại</button>
+    </div>
 
-<!-- Unity -->
-<div id="unity-container">
-  <canvas id="unity-canvas"></canvas>
-</div>
+    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false;'>
+        
+        <a-marker preset="hiro">
+            
+            <a-entity position="-1.5 0 0">
+                <a-text value="Na2O" position="0 1.5 0" align="center" color="black" scale="2 2 2"></a-text>
+                <a-cylinder color="white" height="1" radius="0.4" opacity="0.3" position="0 0.5 0"></a-cylinder>
+                <a-cylinder color="#aaddff" height="0.8" radius="0.38" opacity="0.8" position="0 0.4 0"></a-cylinder>
+                <a-box id="litmus-na2o" color="#800080" depth="0.05" height="0.6" width="0.2" position="0 1.2 0"></a-box>
+            </a-entity>
 
-<!-- Nút -->
-<div id="controls">
-  <button onclick="toggleCamera()">📷 Camera</button>
-  <button onclick="toggleFullscreen()">⛶ Full</button>
-</div>
+            <a-entity position="0 0 0">
+                <a-text value="MgO" position="0 1.5 0" align="center" color="black" scale="2 2 2"></a-text>
+                <a-cylinder color="white" height="1" radius="0.4" opacity="0.3" position="0 0.5 0"></a-cylinder>
+                <a-cylinder color="#aaddff" height="0.8" radius="0.38" opacity="0.8" position="0 0.4 0"></a-cylinder>
+                <a-box id="litmus-mgo" color="#800080" depth="0.05" height="0.6" width="0.2" position="0 1.2 0"></a-box>
+            </a-entity>
 
-<script src="Build/web build.loader.js"></script>
+            <a-entity position="1.5 0 0">
+                <a-text value="P2O5" position="0 1.5 0" align="center" color="black" scale="2 2 2"></a-text>
+                <a-cylinder color="white" height="1" radius="0.4" opacity="0.3" position="0 0.5 0"></a-cylinder>
+                <a-cylinder color="#aaddff" height="0.8" radius="0.38" opacity="0.8" position="0 0.4 0"></a-cylinder>
+                <a-box id="litmus-p2o5" color="#800080" depth="0.05" height="0.6" width="0.2" position="0 1.2 0"></a-box>
+            </a-entity>
 
-<script>
-/* ================= CAMERA ================= */
-let camStream = null;
-let camOn = true;
+        </a-marker>
 
-async function startCamera() {
-  camStream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "environment" }
-  });
-  document.getElementById("camera").srcObject = camStream;
-}
+        <a-entity camera></a-entity>
+    </a-scene>
 
-function stopCamera() {
-  if (camStream) {
-    camStream.getTracks().forEach(t => t.stop());
-    camStream = null;
-  }
-}
+    <script>
+        function runExperiment() {
+            // Lấy các thẻ quỳ tím
+            const na2o = document.getElementById('litmus-na2o');
+            const mgo = document.getElementById('litmus-mgo');
+            const p2o5 = document.getElementById('litmus-p2o5');
 
-function toggleCamera() {
-  camOn ? stopCamera() : startCamera();
-  camOn = !camOn;
-}
+            // 1. Hạ quỳ tím xuống nước
+            const downAnim = "property: position; to: 0 0.6 0; dur: 1000; easing: easeInOutQuad";
+            na2o.setAttribute('animation', downAnim);
+            mgo.setAttribute('animation', downAnim);
+            p2o5.setAttribute('animation', downAnim);
 
-/* ================= FULLSCREEN ================= */
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
-}
+            // 2. Đổi màu và kéo lên sau 1.5 giây
+            setTimeout(() => {
+                // Na2O -> NaOH (Xanh đậm)
+                na2o.setAttribute('color', '#0000FF'); 
+                
+                // MgO -> Mg(OH)2 (Xanh - thực tế yếu hơn nhưng mô phỏng để xanh cho học sinh dễ hiểu)
+                mgo.setAttribute('color', '#3333FF'); 
+                
+                // P2O5 -> H3PO4 (Đỏ)
+                p2o5.setAttribute('color', '#FF0000');
 
-/* ================= UNITY ================= */
-createUnityInstance(document.querySelector("#unity-canvas"), {
-  dataUrl: "Build/web build.data.unityweb",
-  frameworkUrl: "Build/web build.framework.js.unityweb",
-  codeUrl: "Build/web build.wasm.unityweb",
-  streamingAssetsUrl: "StreamingAssets",
-  companyName: "AR",
-  productName: "ThiNghiemVatLy",
-  productVersion: "1.0"
-});
+                // Kéo lên
+                const upAnim = "property: position; to: 0 1.2 0; dur: 1000; easing: easeInOutQuad";
+                na2o.setAttribute('animation', upAnim);
+                mgo.setAttribute('animation', upAnim);
+                p2o5.setAttribute('animation', upAnim);
+                
+            }, 1500);
+        }
 
-/* Khởi động camera */
-startCamera();
-</script>
+        function resetExperiment() {
+            const na2o = document.getElementById('litmus-na2o');
+            const mgo = document.getElementById('litmus-mgo');
+            const p2o5 = document.getElementById('litmus-p2o5');
 
+            // Reset màu về tím
+            na2o.setAttribute('color', '#800080');
+            mgo.setAttribute('color', '#800080');
+            p2o5.setAttribute('color', '#800080');
+
+            // Đảm bảo vị trí ở trên cao
+            na2o.setAttribute('position', '0 1.2 0');
+            mgo.setAttribute('position', '0 1.2 0');
+            p2o5.setAttribute('position', '0 1.2 0');
+
+            // Xóa animation cũ để tránh xung đột
+            na2o.removeAttribute('animation');
+            mgo.removeAttribute('animation');
+            p2o5.removeAttribute('animation');
+        }
+    </script>
 </body>
 </html>
