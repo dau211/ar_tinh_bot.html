@@ -1,201 +1,48 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Thí nghiệm AR Oxide - Hóa học 9</title>
+  <head>
+    <title>AR Hóa Học - Oxide Chu kỳ 3</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; }
-        .instruction-overlay {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            text-align: center;
-            z-index: 100;
-            pointer-events: none;
-        }
-        .instruction-overlay div {
-            display: inline-block;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-        .controls {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            padding: 12px 20px;
-            background: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px #d35400;
-        }
-        button:active { box-shadow: 0 2px #d35400; transform: translateY(2px); }
-    </style>
-</head>
-<body>
-
-    <div class="instruction-overlay">
-        <div id="status">Quét hình HIRO để bắt đầu thí nghiệm</div>
-    </div>
-
-    <div class="controls">
-        <button onclick="runStep1()">1. Cho hóa chất</button>
-        <button id="btn-litmus" onclick="runStep2()" disabled>2. Thử quỳ tím</button>
-        <button onclick="location.reload()">Làm lại</button>
-    </div>
-
-    <a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'>
+  </head>
+  <body style="margin: 0px; overflow: hidden;">
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+      
+      <a-marker preset="hiro">
         
-        <a-marker preset="hiro">
-            <!-- Mặt bàn thí nghiệm -->
-            <a-box position="0 -0.05 0" width="5" height="0.1" depth="3" color="#f3e5ab" material="opacity: 0.9; src: url(https://cdn.pixabay.com/photo/2016/12/17/14/33/wood-1913551_960_720.jpg)"></a-box>
+        <a-entity position="-1 0 0">
+            <a-cylinder color="white" opacity="0.3" radius="0.3" height="0.8"></a-cylinder>
+            <a-cylinder id="liquid-na" color="white" radius="0.28" height="0.4" position="0 -0.15 0"></a-cylinder>
+            <a-text value="Na2O" position="-0.2 -0.6 0" rotation="-90 0 0" color="black" width="3"></a-text>
+            <a-text value="NaOH (pH 13)" position="-0.4 0.6 0" rotation="-90 0 0" color="blue" width="2"></a-text>
+        </a-entity>
 
-            <!-- Hệ thống trạm -->
-            
-            <!-- TRẠM 1: Na2O -->
-            <a-entity position="-1.5 0 0">
-                <a-text value="Na2O" position="0 2 0" align="center" color="#000" width="4"></a-text>
-                <a-text id="eq-1" value="Na2O + H2O -> 2NaOH" position="0 2.3 0" align="center" color="#d35400" width="3" visible="false"></a-text>
-                
-                <a-entity class="flask">
-                    <a-cone color="#fff" opacity="0.3" radius-bottom="0.45" radius-top="0.1" height="0.8" position="0 0.4 0"></a-cone>
-                    <a-cylinder color="#fff" opacity="0.3" radius="0.1" height="0.3" position="0 0.9 0"></a-cylinder>
-                    <a-ring color="#fff" opacity="0.5" radius-inner="0.09" radius-outer="0.11" rotation="-90 0 0" position="0 1.05 0"></a-ring>
-                    <a-cone id="liquid-1" color="#b3e5fc" opacity="0.6" radius-bottom="0.43" radius-top="0.2" height="0.4" position="0 0.2 0"></a-cone>
-                </a-entity>
+        <a-entity position="0 0 0">
+            <a-cylinder color="white" opacity="0.3" radius="0.3" height="0.8"></a-cylinder>
+            <a-cylinder id="liquid-mg" color="white" radius="0.28" height="0.4" position="0 -0.15 0"></a-cylinder>
+            <a-text value="MgO" position="-0.2 -0.6 0" rotation="-90 0 0" color="black" width="3"></a-text>
+            <a-text value="Mg(OH)2 (pH 9)" position="-0.4 0.6 0" rotation="-90 0 0" color="cyan" width="2"></a-text>
+        </a-entity>
 
-                <a-entity id="spoon-1" position="0.5 0 0.4" rotation="0 45 0">
-                    <a-cylinder color="#ddd" opacity="0.7" radius="0.01" height="1" position="0 0.5 0" rotation="10 0 0"></a-cylinder>
-                    <a-sphere id="powder-1" color="#fff" radius="0.06" position="0.03 1 -0.05"></a-sphere>
-                </a-entity>
+        <a-entity position="1 0 0">
+            <a-cylinder color="white" opacity="0.3" radius="0.3" height="0.8"></a-cylinder>
+            <a-cylinder id="liquid-p" color="white" radius="0.28" height="0.4" position="0 -0.15 0"></a-cylinder>
+            <a-text value="P2O5" position="-0.2 -0.6 0" rotation="-90 0 0" color="black" width="3"></a-text>
+            <a-text value="H3PO4 (pH 2)" position="-0.4 0.6 0" rotation="-90 0 0" color="red" width="2"></a-text>
+        </a-entity>
 
-                <a-box id="litmus-1" color="#800080" width="0.1" height="0.5" depth="0.01" position="-0.4 0.05 0.5" rotation="-90 0 0"></a-box>
-            </a-entity>
+      </a-marker>
 
-            <!-- TRẠM 2: MgO -->
-            <a-entity position="0 0 0">
-                <a-text value="MgO" position="0 2 0" align="center" color="#000" width="4"></a-text>
-                <a-text id="eq-2" value="MgO + H2O -> Mg(OH)2" position="0 2.3 0" align="center" color="#d35400" width="3" visible="false"></a-text>
-                
-                <a-entity class="flask">
-                    <a-cone color="#fff" opacity="0.3" radius-bottom="0.45" radius-top="0.1" height="0.8" position="0 0.4 0"></a-cone>
-                    <a-cylinder color="#fff" opacity="0.3" radius="0.1" height="0.3" position="0 0.9 0"></a-cylinder>
-                    <a-ring color="#fff" opacity="0.5" radius-inner="0.09" radius-outer="0.11" rotation="-90 0 0" position="0 1.05 0"></a-ring>
-                    <a-cone id="liquid-2" color="#b3e5fc" opacity="0.6" radius-bottom="0.43" radius-top="0.2" height="0.4" position="0 0.2 0"></a-cone>
-                </a-entity>
-
-                <a-entity id="spoon-2" position="0.5 0 0.4" rotation="0 45 0">
-                    <a-cylinder color="#ddd" opacity="0.7" radius="0.01" height="1" position="0 0.5 0" rotation="10 0 0"></a-cylinder>
-                    <a-sphere id="powder-2" color="#fff" radius="0.06" position="0.03 1 -0.05"></a-sphere>
-                </a-entity>
-
-                <a-box id="litmus-2" color="#800080" width="0.1" height="0.5" depth="0.01" position="-0.4 0.05 0.5" rotation="-90 0 0"></a-box>
-            </a-entity>
-
-            <!-- TRẠM 3: P2O5 -->
-            <a-entity position="1.5 0 0">
-                <a-text value="P2O5" position="0 2 0" align="center" color="#000" width="4"></a-text>
-                <a-text id="eq-3" value="P2O5 + 3H2O -> 2H3PO4" position="0 2.3 0" align="center" color="#d35400" width="3" visible="false"></a-text>
-                
-                <a-entity class="flask">
-                    <a-cone color="#fff" opacity="0.3" radius-bottom="0.45" radius-top="0.1" height="0.8" position="0 0.4 0"></a-cone>
-                    <a-cylinder color="#fff" opacity="0.3" radius="0.1" height="0.3" position="0 0.9 0"></a-cylinder>
-                    <a-ring color="#fff" opacity="0.5" radius-inner="0.09" radius-outer="0.11" rotation="-90 0 0" position="0 1.05 0"></a-ring>
-                    <a-cone id="liquid-3" color="#b3e5fc" opacity="0.6" radius-bottom="0.43" radius-top="0.2" height="0.4" position="0 0.2 0"></a-cone>
-                </a-entity>
-
-                <a-entity id="spoon-3" position="0.5 0 0.4" rotation="0 45 0">
-                    <a-cylinder color="#ddd" opacity="0.7" radius="0.01" height="1" position="0 0.5 0" rotation="10 0 0"></a-cylinder>
-                    <a-sphere id="powder-3" color="#fff" radius="0.06" position="0.03 1 -0.05"></a-sphere>
-                </a-entity>
-
-                <a-box id="litmus-3" color="#800080" width="0.1" height="0.5" depth="0.01" position="-0.4 0.05 0.5" rotation="-90 0 0"></a-box>
-            </a-entity>
-
-        </a-marker>
-        <a-entity camera></a-entity>
+      <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        const status = document.getElementById('status');
-        const btnLitmus = document.getElementById('btn-litmus');
-
-        function runStep1() {
-            status.innerText = "Đang múc Oxide cho vào nước...";
-            for(let i=1; i<=3; i++) {
-                const spoon = document.getElementById(`spoon-${i}`);
-                const powder = document.getElementById(`powder-${i}`);
-                const liquid = document.getElementById(`liquid-${i}`);
-                const eq = document.getElementById(`eq-${i}`);
-
-                // Move spoon to flask neck
-                spoon.setAttribute('animation', 'property: position; to: 0 1.2 0; dur: 2000; easing: easeInOutQuad');
-                spoon.setAttribute('animation__rot', 'property: rotation; to: 0 0 70; dur: 2000; easing: easeInOutQuad');
-
-                setTimeout(() => {
-                    // Powder fall
-                    powder.setAttribute('animation', 'property: position; to: 0 -0.8 0; dur: 1000');
-                    setTimeout(() => {
-                        powder.setAttribute('visible', 'false');
-                        eq.setAttribute('visible', 'true');
-                        liquid.setAttribute('color', '#e1f5fe'); // subtle change
-                    }, 1000);
-                }, 2000);
-
-                setTimeout(() => {
-                    spoon.setAttribute('animation', 'property: position; to: 0.5 0 0.4; dur: 1500');
-                    spoon.setAttribute('animation__rot', 'property: rotation; to: 0 45 0; dur: 1500');
-                }, 4000);
-            }
-            setTimeout(() => {
-                status.innerText = "Hóa chất đã tan. Hãy nhúng quỳ tím.";
-                btnLitmus.disabled = false;
-            }, 6000);
-        }
-
-        function runStep2() {
-            status.innerText = "Đang nhúng quỳ tím kiểm tra pH...";
-            for(let i=1; i<=3; i++) {
-                const litmus = document.getElementById(`litmus-${i}`);
-                
-                // Lift and rotate
-                litmus.setAttribute('animation', 'property: position; to: 0 1.2 0; dur: 1000');
-                litmus.setAttribute('animation__rot', 'property: rotation; to: 0 0 0; dur: 1000');
-
-                setTimeout(() => {
-                    // Dip
-                    litmus.setAttribute('animation', 'property: position; to: 0 0.4 0; dur: 1000');
-                    
-                    setTimeout(() => {
-                        // Color change logic
-                        let color = "#800080";
-                        if(i===1) color = "#0000ff"; // Strong base
-                        if(i===2) color = "#6666ff"; // Weak base
-                        if(i===3) color = "#ff0000"; // Acid
-                        litmus.setAttribute('color', color);
-                        
-                        // Lift back up
-                        litmus.setAttribute('animation', 'property: position; to: 0 1.4 0; dur: 1000');
-                    }, 1200);
-                }, 1200);
-            }
-            setTimeout(() => {
-                status.innerText = "Kết luận: Oxit kim loại tan tạo Bazơ, Oxit phi kim tan tạo Axit.";
-            }, 5000);
-        }
+      // Logic đơn giản để đổi màu khi chạm (giả lập phản ứng)
+      window.addEventListener('click', function () {
+          document.querySelector('#liquid-na').setAttribute('color', '#0000FF'); // Xanh dương
+          document.querySelector('#liquid-mg').setAttribute('color', '#ADD8E6'); // Xanh nhạt
+          document.querySelector('#liquid-p').setAttribute('color', '#FF0000');  // Đỏ
+      });
     </script>
-</body>
+  </body>
 </html>
