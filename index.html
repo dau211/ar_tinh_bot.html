@@ -63,11 +63,14 @@
         <!-- Bàn thí nghiệm gỗ -->
         <a-box position="0 -0.15 0" width="4.5" height="0.1" depth="3" color="#5D4037"></a-box>
 
-        <!-- CHIẾC THÌA (SPOON) -->
+        <!-- CHIẾC THÌA (SPOON) - Nâng cấp hình dáng thực tế -->
         <a-entity id="spoon-group" position="0 1.5 0.5" visible="false">
+            <!-- Cán thìa kim loại -->
             <a-cylinder position="0.3 0 0" radius="0.01" height="0.7" color="#BDBDBD" rotation="0 0 90"></a-cylinder>
+            <!-- Lòng thìa hơi trũng -->
             <a-entity position="-0.08 0 0">
                 <a-sphere radius="0.1" color="#E0E0E0" scale="1.4 0.3 1" clip-side="back"></a-sphere>
+                <!-- Bột bám trên thìa khi xúc -->
                 <a-sphere id="spoon-powder" position="0 0.04 0" radius="0.06" color="white" visible="false"></a-sphere>
             </a-entity>
         </a-entity>
@@ -78,72 +81,50 @@
             <a-entity position="-1.2 0 0">
                 <a-cylinder radius="0.3" height="0.02" color="#ECEFF1"></a-cylinder>
                 <a-cone id="powder-na" radius-bottom="0.18" height="0.12" color="#FFFFFF" position="0 0.05 0"></a-cone>
-                <!-- Nhãn công thức trên đĩa -->
-                <a-entity position="0 0.15 0.2" rotation="-90 0 0">
-                    <a-plane width="0.4" height="0.2" color="#2c3e50" opacity="0.8"></a-plane>
-                    <a-text value="Na2O" align="center" width="2" color="white" position="0 0 0.01"></a-text>
-                </a-entity>
+                <a-text value="Na2O" position="0 0.25 0" rotation="-90 0 0" color="#FFFFFF" align="center" width="2.5" font="mozillavr"></a-text>
             </a-entity>
             <!-- Đĩa MgO -->
             <a-entity position="0 0 0">
                 <a-cylinder radius="0.3" height="0.02" color="#ECEFF1"></a-cylinder>
                 <a-cone id="powder-mg" radius-bottom="0.18" height="0.12" color="#F5F5F5" position="0 0.05 0"></a-cone>
-                <!-- Nhãn công thức trên đĩa -->
-                <a-entity position="0 0.15 0.2" rotation="-90 0 0">
-                    <a-plane width="0.4" height="0.2" color="#2c3e50" opacity="0.8"></a-plane>
-                    <a-text value="MgO" align="center" width="2" color="white" position="0 0 0.01"></a-text>
-                </a-entity>
+                <a-text value="MgO" position="0 0.25 0" rotation="-90 0 0" color="#FFFFFF" align="center" width="2.5" font="mozillavr"></a-text>
             </a-entity>
             <!-- Đĩa P2O5 -->
             <a-entity position="1.2 0 0">
                 <a-cylinder radius="0.3" height="0.02" color="#ECEFF1"></a-cylinder>
                 <a-cone id="powder-p" radius-bottom="0.18" height="0.12" color="#FAFAFA" position="0 0.05 0"></a-cone>
-                <!-- Nhãn công thức trên đĩa -->
-                <a-entity position="0 0.15 0.2" rotation="-90 0 0">
-                    <a-plane width="0.4" height="0.2" color="#2c3e50" opacity="0.8"></a-plane>
-                    <a-text value="P2O5" align="center" width="2" color="white" position="0 0 0.01"></a-text>
-                </a-entity>
+                <a-text value="P2O5" position="0 0.25 0" rotation="-90 0 0" color="#FFFFFF" align="center" width="2.5" font="mozillavr"></a-text>
             </a-entity>
         </a-entity>
 
-        <!-- DÃY CỐC NƯỚC -->
+        <!-- DÃY CỐC NƯỚC - Nâng cấp hiệu ứng chất lỏng -->
         <a-entity position="0 0 0.4">
-            <!-- Cốc 1 -->
+            <!-- Cốc 1 (Na2O) -->
             <a-entity id="beaker-na" position="-1.2 0.3 0">
               <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.1" side="double"></a-cylinder>
+              <!-- Nước bên trong cốc -->
               <a-cylinder id="liquid-na" radius="0.3" height="0.45" position="0 -0.15 0" color="#81D4FA" opacity="0.6"></a-cylinder>
-              <a-circle radius="0.3" position="0 0.08 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4"></a-circle>
-              <!-- Nhãn H2O trên thành cốc -->
-              <a-entity position="0 0 0.33" rotation="0 0 0">
-                  <a-plane width="0.3" height="0.15" color="#2980b9" opacity="0.7"></a-plane>
-                  <a-text value="H2O" align="center" width="1.8" color="white" position="0 0 0.01"></a-text>
-              </a-entity>
+              <!-- Mặt nước sáng bóng -->
+              <a-circle radius="0.3" position="0 0.08 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4" material="shininess: 100;"></a-circle>
+              <a-text value="H2O" position="0 -0.45 0.35" rotation="-90 0 0" color="#000" align="center" width="2"></a-text>
               <a-box id="litmus-na" position="0 0.5 0" width="0.1" height="0.4" depth="0.01" color="#E1BEE7" visible="false"></a-box>
             </a-entity>
 
-            <!-- Cốc 2 -->
+            <!-- Cốc 2 (MgO) -->
             <a-entity id="beaker-mg" position="0 0.3 0">
               <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.1" side="double"></a-cylinder>
               <a-cylinder id="liquid-mg" radius="0.3" height="0.45" position="0 -0.15 0" color="#81D4FA" opacity="0.6"></a-cylinder>
-              <a-circle radius="0.3" position="0 0.08 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4"></a-circle>
-              <!-- Nhãn H2O trên thành cốc -->
-              <a-entity position="0 0 0.33" rotation="0 0 0">
-                  <a-plane width="0.3" height="0.15" color="#2980b9" opacity="0.7"></a-plane>
-                  <a-text value="H2O" align="center" width="1.8" color="white" position="0 0 0.01"></a-text>
-              </a-entity>
+              <a-circle radius="0.3" position="0 0.08 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4" material="shininess: 100;"></a-circle>
+              <a-text value="H2O" position="0 -0.45 0.35" rotation="-90 0 0" color="#000" align="center" width="2"></a-text>
               <a-box id="litmus-mg" position="0 0.5 0" width="0.1" height="0.4" depth="0.01" color="#E1BEE7" visible="false"></a-box>
             </a-entity>
 
-            <!-- Cốc 3 -->
+            <!-- Cốc 3 (P2O5) -->
             <a-entity id="beaker-p" position="1.2 0.3 0">
               <a-cylinder radius="0.32" height="0.75" color="#fff" opacity="0.1" side="double"></a-cylinder>
               <a-cylinder id="liquid-p" radius="0.3" height="0.45" position="0 -0.15 0" color="#81D4FA" opacity="0.6"></a-cylinder>
-              <a-circle radius="0.3" position="0 0.08 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4"></a-circle>
-              <!-- Nhãn H2O trên thành cốc -->
-              <a-entity position="0 0 0.33" rotation="0 0 0">
-                  <a-plane width="0.3" height="0.15" color="#2980b9" opacity="0.7"></a-plane>
-                  <a-text value="H2O" align="center" width="1.8" color="white" position="0 0 0.01"></a-text>
-              </a-entity>
+              <a-circle radius="0.3" position="0 0.08 0" rotation="-90 0 0" color="#E1F5FE" opacity="0.4" material="shininess: 100;"></a-circle>
+              <a-text value="H2O" position="0 -0.45 0.35" rotation="-90 0 0" color="#000" align="center" width="2"></a-text>
               <a-box id="litmus-p" position="0 0.5 0" width="0.1" height="0.4" depth="0.01" color="#E1BEE7" visible="false"></a-box>
             </a-entity>
         </a-entity>
@@ -170,6 +151,7 @@
 
         for(let i=0; i < 3; i++) {
             status.innerText = "Đang lấy hóa chất từ đĩa " + (i+1) + "...";
+            // Di chuyển thìa nghiêng nhẹ để xúc
             spoon.setAttribute('animation', `property: position; to: ${offsets[i]} 0.2 -0.8; dur: 1000; easing: easeInOutQuad`);
             spoon.setAttribute('animation__rot', `property: rotation; to: 10 0 0; dur: 500; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 1100));
@@ -178,20 +160,25 @@
             document.getElementById(powderIds[i]).setAttribute('visible', 'false');
             
             status.innerText = "Đang đổ hóa chất vào cốc...";
+            // Di chuyển thìa tới trên cốc
             spoon.setAttribute('animation', `property: position; to: ${offsets[i]} 0.8 0.4; dur: 1000; easing: easeInOutQuad`);
             spoon.setAttribute('animation__rot', `property: rotation; to: 0 0 0; dur: 500; easing: easeInOutQuad`);
             await new Promise(r => setTimeout(r, 1100));
             
+            // Hiệu ứng đổ: Xoay mạnh và gõ nhẹ
             spoon.setAttribute('animation', `property: rotation; to: 0 0 45; dur: 400; easing: easeInBack`);
             await new Promise(r => setTimeout(r, 450));
             
             powderOnSpoon.setAttribute('visible', 'false');
+            
+            // Đổi màu nước sau khi đổ
             document.getElementById(liquidIds[i]).setAttribute('animation', 'property: opacity; to: 0.8; dur: 1000');
             
             if(i === 0) status.innerText = "Na2O tan: Dung dịch kiềm NaOH";
             if(i === 1) status.innerText = "MgO tan một phần: Dung dịch kiềm yếu Mg(OH)2";
             if(i === 2) status.innerText = "P2O5 tan: Dung dịch acid H3PO4";
             
+            // Reset thế thìa
             spoon.setAttribute('animation', `property: rotation; to: 0 0 0; dur: 300`);
             await new Promise(r => setTimeout(r, 1200));
         }
